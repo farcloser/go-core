@@ -2,11 +2,12 @@ package log
 
 import (
 	"bufio"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 // Init should be called when the app starts, from a config object

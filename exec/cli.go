@@ -3,20 +3,22 @@ package exec
 import (
 	"bytes"
 	"fmt"
-	"github.com/codecomet-io/go-core/log"
-	"github.com/codecomet-io/go-core/reporter"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"sync"
+
+	"github.com/codecomet-io/go-core/log"
+	"github.com/codecomet-io/go-core/reporter"
 )
 
 func Resolve(bin string) (string, error) {
 	o, err := exec.Command("which", bin).Output()
 	out := string(o)
 	out = strings.Trim(out, "\n")
+
 	return out, err
 }
 
@@ -92,6 +94,7 @@ func (com *Commander) Exec(args ...string) (string, string, error) {
 		reporter.CaptureException(fmt.Errorf("failed sub execution: %s - out: %s - err: %s", err, o, e))
 		log.Error().Err(err).Str("out", o).Str("err", e).Msg("Execution failed")
 	}
+
 	return o, e, err
 }
 

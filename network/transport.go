@@ -22,5 +22,6 @@ func (adt *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 		req.Header.Set("Accept", "application/json")
 		// req.Header.Set("Content-Type", "application/json")
 	}
+
 	return adt.Transport.RoundTrip(req)
 }

@@ -1,31 +1,33 @@
 package reporter
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/codecomet-io/go-core/log"
 	"github.com/codecomet-io/go-core/network"
 	"github.com/getsentry/sentry-go"
-	"net/http"
-	"time"
 )
 
 // Init should be called when the app starts, from a config object
 func Init(cnf *Config) {
 	if cnf.Disabled {
 		log.Warn().Msg("Crash reporting and tracing is entirely disabled. This is not recommended.")
+
 		return
 	}
 
 	log.Debug().Msg("Initializing crash reporter with config")
 
-	hc := cnf.httpClient
-	if hc == nil {
-		hc = &http.Client{}
+	httpClient := cnf.httpClient
+	if httpClient == nil {
+		httpClient = &http.Client{}
 	}
 
-	hc.Transport = network.Get().Transport()
+	httpClient.Transport = network.Get().Transport()
 
 	err := sentry.Init(sentry.ClientOptions{
-		HTTPClient:       hc,
+		HTTPClient:       httpClient,
 		Dsn:              cnf.DSN,
 		Environment:      cnf.Environment,
 		Release:          cnf.Release,

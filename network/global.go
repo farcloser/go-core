@@ -1,8 +1,9 @@
 package network
 
 import (
-	"github.com/codecomet-io/go-core/log"
 	"net/http"
+
+	"github.com/codecomet-io/go-core/log"
 )
 
 var network *Network

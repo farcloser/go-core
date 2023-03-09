@@ -1,0 +1,25 @@
+# This is currently over the top. Check https://github.com/moby/buildkit/blob/master/.golangci.yml
+# Or
+linters-settings: # please keep this alphabetized
+  staticcheck:
+    checks:
+      - "all"
+
+linters:
+  disable-all: false
+  enable-all: true
+  disable:
+    - deadcode
+    - scopelint
+    - exhaustivestruct
+    - maligned
+    - interfacer
+    - varcheck
+    - golint
+    - ifshort
+    - structcheck
+    - nosnakecase
+    - rowserrcheck
+    - sqlclosecheck
+    - structcheck
+    - wastedassign

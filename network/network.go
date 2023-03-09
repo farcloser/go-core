@@ -3,9 +3,10 @@ package network
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"github.com/codecomet-io/go-core/log"
 	"net"
 	"net/http"
+
+	"github.com/codecomet-io/go-core/log"
 )
 
 // Network is a struct that holds the network configuration and provides methods to retrieve TLSConfig and Transport objects
