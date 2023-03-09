@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Init should be called when the app starts, from a config object
+// Init should be called when the app starts, from a config object.
 func Init(cnf *Config) {
 	// This mostly should be the responsibility of the app itself but hey
 	zerolog.SetGlobalLevel(cnf.Level)

@@ -9,7 +9,9 @@ import (
 	"github.com/getsentry/sentry-go"
 )
 
-// Init should be called when the app starts, from a config object
+const flushTimeout = 2 * time.Second
+
+// Init should be called when the app starts, from a config object.
 func Init(cnf *Config) {
 	if cnf.Disabled {
 		log.Warn().Msg("Crash reporting and tracing is entirely disabled. This is not recommended.")
@@ -54,5 +56,5 @@ func CaptureEvent(e *Event) *EventID {
 func Shutdown() {
 	// Flush buffered events before the program terminates.
 	// Set the timeout to the maximum duration the program can afford to wait.
-	sentry.Flush(2 * time.Second)
+	sentry.Flush(flushTimeout)
 }

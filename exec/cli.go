@@ -19,7 +19,7 @@ func Resolve(bin string) (string, error) {
 	out := string(o)
 	out = strings.Trim(out, "\n")
 
-	return out, err
+	return out, fmt.Errorf("Resolve errored with: %w", err)
 }
 
 func New(defaultBin string, envBin string) *Commander {
@@ -29,32 +29,34 @@ func New(defaultBin string, envBin string) *Commander {
 		bin = defaultBin
 	}
 
-	ex := bin
+	execut := bin
 	// XXX this is ill-designed
 	if !filepath.IsAbs(bin) {
 		var err error
-		ex, err = os.Executable()
+		execut, err = os.Executable()
+
 		if err != nil {
-			reporter.CaptureException(fmt.Errorf("failed retrieving current binary information: %s", err))
+			reporter.CaptureException(fmt.Errorf("failed retrieving current binary information: %w", err))
 			log.Fatal().Err(err).Msg("Cannot find current binary location. This is very wrong.")
 		}
-		ex = filepath.Join(filepath.Dir(ex), bin)
 
-		if _, err := os.Stat(ex); err != nil {
+		execut = filepath.Join(filepath.Dir(execut), bin)
+
+		if _, err := os.Stat(execut); err != nil {
 			// Fallback to path resolution
-			ex, _ = Resolve(bin)
+			execut, _ = Resolve(bin)
 		}
 	}
 
-	if _, err := os.Stat(ex); err != nil {
+	if _, err := os.Stat(execut); err != nil {
 		w, _ := os.Getwd()
-		reporter.CaptureException(fmt.Errorf("failed finding cli %s with pwd %s - err: %s", bin, w, err))
+		reporter.CaptureException(fmt.Errorf("failed finding cli %s with pwd %s - err: %w", bin, w, err))
 		log.Fatal().Str("pwd", w).Msgf("Failed finding cli %s with pwd %s - err: %s", bin, w, err)
 	}
 
 	return &Commander{
 		mu:  &sync.Mutex{},
-		bin: ex,
+		bin: execut,
 	}
 }
 
@@ -77,7 +79,7 @@ func (com *Commander) Attach(args ...string) error {
 	}
 
 	if err != nil && !com.NoReport {
-		reporter.CaptureException(fmt.Errorf("failed attached execution: %s", err))
+		reporter.CaptureException(fmt.Errorf("failed attached execution: %w", err))
 		log.Error().Err(err).Msg("Attached execution failed")
 	}
 
@@ -86,39 +88,45 @@ func (com *Commander) Attach(args ...string) error {
 
 func (com *Commander) Exec(args ...string) (string, string, error) {
 	var stdout bytes.Buffer
+
 	var stderr bytes.Buffer
+
 	err := com.ExecPipes(com.Stdin, &stdout, &stderr, args...)
-	o := stdout.String()
-	e := stderr.String()
-	if err != nil && !com.NoReport {
-		reporter.CaptureException(fmt.Errorf("failed sub execution: %s - out: %s - err: %s", err, o, e))
-		log.Error().Err(err).Str("out", o).Str("err", e).Msg("Execution failed")
+	sout := stdout.String()
+	serr := stderr.String()
+
+	if !com.NoReport && err != nil {
+		reporter.CaptureException(fmt.Errorf("failed sub execution: %w - out: %s - err: %s", err, sout, serr))
+		log.Error().Err(err).Str("out", sout).Str("err", serr).Msg("Execution failed")
 	}
 
-	return o, e, err
+	return sout, serr, err
 }
 
 func (com *Commander) ExecPipes(stdin io.Reader, stdout io.Writer, stderr io.Writer, args ...string) error {
 	args = append(com.PreArgs, args...)
 
-	var envs []string
+	envs := []string{}
 	for k, v := range com.Env {
 		envs = append(envs, fmt.Sprintf("%s=%s", k, v))
 	}
+
 	log.Debug().Str("binary", com.bin).Strs("arguments", args).Strs("env", envs).Msg("Executing command")
 
-	c := exec.Command(com.bin, args...)
+	command := exec.Command(com.bin, args...) //nolint:gosec
 	if com.Dir != "" {
-		c.Dir = com.Dir
+		command.Dir = com.Dir
 	}
-	c.Env = append(os.Environ(), envs...)
-	c.Stdin = stdin
-	c.Stdout = stdout
-	c.Stderr = stderr
+
+	command.Env = append(os.Environ(), envs...)
+
+	command.Stdin = stdin
+	command.Stdout = stdout
+	command.Stderr = stderr
 
 	com.mu.Lock()
-	e := c.Run()
+	e := command.Run()
 	com.mu.Unlock()
 
-	return e
+	return fmt.Errorf("ExecPipes errored: %w", e)
 }

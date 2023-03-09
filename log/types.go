@@ -2,8 +2,10 @@ package log
 
 import "github.com/rs/zerolog"
 
-type Level = zerolog.Level
-type Event = zerolog.Event
+type (
+	Level = zerolog.Level
+	Event = zerolog.Event
+)
 
 const (
 	// DebugLevel defines debug log level.

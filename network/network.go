@@ -9,13 +9,14 @@ import (
 	"github.com/codecomet-io/go-core/log"
 )
 
-// Network is a struct that holds the network configuration and provides methods to retrieve TLSConfig and Transport objects
+// Network holds network configuration for both client and server operations and provides helpers methods
+// to retrieve TLSConfig and Transport objects.
 type Network struct {
 	clientConfig *Config
 	serverConfig *Config
 }
 
-// TLSConfig returns a new tls.Config object populated against the configuration
+// TLSConfig returns a new tls.Config object populated against the configuration.
 func (network *Network) TLSConfig() *tls.Config {
 	cCA := x509.NewCertPool()
 	if network.serverConfig.ClientCA != "" {
@@ -35,10 +36,15 @@ func (network *Network) TLSConfig() *tls.Config {
 		}
 	*/
 
-	tlsConfig := &tls.Config{
+	tlsMin := network.serverConfig.TLSMin
+	if tlsMin < tls.VersionTLS12 {
+		tlsMin = tls.VersionTLS13
+	}
+
+	tlsConfig := &tls.Config{ //nolint:gosec
 		ClientCAs:  cCA,
 		ClientAuth: tls.VerifyClientCertIfGiven,
-		MinVersion: network.serverConfig.TLSMin,
+		MinVersion: tlsMin,
 		// XXX missing bits
 		// VerifyPeerCertificate:
 	}
@@ -49,7 +55,7 @@ func (network *Network) TLSConfig() *tls.Config {
 	return tlsConfig
 }
 
-// Transport returns a new Transport object populated against the configuration
+// Transport returns a new Transport object populated against the configuration.
 func (network *Network) Transport() *Transport {
 	dialer := &net.Dialer{
 		Timeout:   network.clientConfig.DialerTimeout,
@@ -73,6 +79,7 @@ func (network *Network) getClientTLSConfig() *tls.Config {
 	} else {
 		rootCAs, _ = x509.SystemCertPool()
 	}
+
 	if network.clientConfig.RootCAs != nil {
 		for _, v := range network.clientConfig.RootCAs {
 			ok := rootCAs.AppendCertsFromPEM([]byte(v))
@@ -82,9 +89,14 @@ func (network *Network) getClientTLSConfig() *tls.Config {
 		}
 	}
 
-	tlsConfig := &tls.Config{
+	tlsMin := network.clientConfig.TLSMin
+	if tlsMin < tls.VersionTLS12 {
+		tlsMin = tls.VersionTLS13
+	}
+
+	tlsConfig := &tls.Config{ //nolint:gosec
 		RootCAs:    rootCAs,
-		MinVersion: network.clientConfig.TLSMin,
+		MinVersion: tlsMin,
 		// XXX missing bits
 		// VerifyPeerCertificate:
 	}

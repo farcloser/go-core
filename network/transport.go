@@ -7,7 +7,7 @@ import (
 )
 
 // Transport implements http.Transport with a RoundTrip that has baked-in defaults, notably for GitHub
-// It is not meant to be instantiated directly, but rather obtained through Get().Transport()
+// It is not meant to be instantiated directly, but rather obtained through Get().Transport().
 type Transport struct {
 	http.Transport
 	TokenValue string
@@ -18,10 +18,16 @@ func (adt *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	if adt.TokenValue != "" {
 		req.Header.Add("Authorization", fmt.Sprintf("%s %s", adt.TokenType, adt.TokenValue))
 	}
+
 	if strings.HasSuffix(req.Host, "github.com") {
-		req.Header.Set("Accept", "application/json")
 		// req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Accept", "application/json")
 	}
 
-	return adt.Transport.RoundTrip(req)
+	resp, err := adt.Transport.RoundTrip(req)
+	if err != nil {
+		err = fmt.Errorf("RoungTrip error: %w", err)
+	}
+
+	return resp, err
 }

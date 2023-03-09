@@ -6,9 +6,9 @@ import (
 	"github.com/codecomet-io/go-core/log"
 )
 
-var network *Network
+var network *Network //nolint:gochecknoglobals
 
-// Init should be called when the app starts, from config objects
+// Init should be called when the app starts, from config objects.
 func Init(client *Config, server *Config) {
 	log.Debug().Msg("Initializing network core with config")
 
@@ -20,7 +20,7 @@ func Init(client *Config, server *Config) {
 	http.DefaultTransport = network.Transport()
 }
 
-// Get returns the network instance, from which a new Transport or TLSConfig object can be retrieved
+// Get returns the network instance, from which a new Transport or TLSConfig object can be retrieved.
 func Get() *Network {
 	return network
 }
