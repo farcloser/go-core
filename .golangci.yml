@@ -1,6 +1,4 @@
-# This is currently over the top. Check https://github.com/moby/buildkit/blob/master/.golangci.yml
-# Or
-linters-settings: # please keep this alphabetized
+linters-settings:
   staticcheck:
     checks:
       - "all"
@@ -9,6 +7,7 @@ linters:
   disable-all: false
   enable-all: true
   disable:
+# Deprecated or auto disabled for lack of generics support
     - deadcode
     - scopelint
     - exhaustivestruct
@@ -23,3 +22,5 @@ linters:
     - sqlclosecheck
     - structcheck
     - wastedassign
+# Too annoying
+    - exhaustruct
