@@ -125,8 +125,11 @@ func (com *Commander) ExecPipes(stdin io.Reader, stdout io.Writer, stderr io.Wri
 	command.Stderr = stderr
 
 	com.mu.Lock()
-	e := command.Run()
+	err := command.Run()
 	com.mu.Unlock()
+	if err != nil {
+		err = fmt.Errorf("ExecPipes errored: %w", err)
+	}
 
-	return fmt.Errorf("ExecPipes errored: %w", e)
+	return err
 }
