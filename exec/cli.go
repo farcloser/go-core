@@ -19,7 +19,11 @@ func Resolve(bin string) (string, error) {
 	out := string(o)
 	out = strings.Trim(out, "\n")
 
-	return out, fmt.Errorf("Resolve errored with: %w", err)
+	if err != nil {
+		err = fmt.Errorf("Resolve errored with: %w", err)
+	}
+
+	return out, err
 }
 
 func New(defaultBin string, envBin string) *Commander {
@@ -127,6 +131,7 @@ func (com *Commander) ExecPipes(stdin io.Reader, stdout io.Writer, stderr io.Wri
 	com.mu.Lock()
 	err := command.Run()
 	com.mu.Unlock()
+
 	if err != nil {
 		err = fmt.Errorf("ExecPipes errored: %w", err)
 	}
