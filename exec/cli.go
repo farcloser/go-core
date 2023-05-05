@@ -10,8 +10,8 @@ import (
 	"strings"
 	"sync"
 
-	"codecomet.dev/go-core/log"
-	"codecomet.dev/go-core/reporter"
+	"go.codecomet.dev/core/log"
+	"go.codecomet.dev/core/reporter"
 )
 
 func Resolve(bin string) (string, error) {

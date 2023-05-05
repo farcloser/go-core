@@ -6,7 +6,7 @@ import (
 	"net"
 	"net/http"
 
-	"codecomet.dev/go-core/log"
+	"go.codecomet.dev/core/log"
 )
 
 // Network holds network configuration for both client and server operations and provides helpers methods

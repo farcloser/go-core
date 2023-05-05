@@ -3,7 +3,7 @@ package network
 import (
 	"net/http"
 
-	"codecomet.dev/go-core/log"
+	"go.codecomet.dev/core/log"
 )
 
 var network *Network //nolint:gochecknoglobals

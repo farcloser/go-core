@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"codecomet.dev/go-core/log"
-	"codecomet.dev/go-core/network"
 	"github.com/getsentry/sentry-go"
+	"go.codecomet.dev/core/log"
+	"go.codecomet.dev/core/network"
 )
 
 const flushTimeout = 2 * time.Second

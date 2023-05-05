@@ -20,4 +20,4 @@ Install pkgsite: go install golang.org/x/pkgsite/cmd/pkgsite@latest
 
 Run it: pkgsite
 
-Open: http://localhost:8080/github.com/codecomet-io/go-core
+Open: http://localhost:8080/github.com/go.codecomet.dev/core
