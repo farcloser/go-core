@@ -1,6 +1,8 @@
-module github.com/codecomet-io/go-core
+module codecomet.dev/go-core
 
-go 1.20
+go 1.19
+
+replace codecomet.dev/go-core => ./
 
 require (
 	github.com/getsentry/sentry-go v0.20.0

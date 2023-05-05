@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/codecomet-io/go-core/log"
-	"github.com/codecomet-io/go-core/network"
+	"codecomet.dev/go-core/log"
+	"codecomet.dev/go-core/network"
 	"github.com/getsentry/sentry-go"
 )
 
