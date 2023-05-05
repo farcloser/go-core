@@ -2,8 +2,6 @@ module go.codecomet.dev/core
 
 go 1.19
 
-replace go.codecomet.dev/core => ./
-
 require (
 	github.com/getsentry/sentry-go v0.20.0
 	github.com/rs/zerolog v1.29.1
