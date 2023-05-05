@@ -1,5 +1,3 @@
-// LICENSING
-// Adapted from: https://github.com/containerd/continuity/blob/main/ioutils.go under Apache License
 package filesystem
 
 import (
@@ -8,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 )
+
+// Adapted from: https://github.com/containerd/continuity/blob/main/ioutils.go under Apache License
 
 /*
    Copyright The containerd Authors.
