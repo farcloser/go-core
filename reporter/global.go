@@ -14,7 +14,7 @@ const flushTimeout = 2 * time.Second
 // Init should be called when the app starts, from a config object.
 func Init(cnf *Config) {
 	if cnf.Disabled {
-		log.Warn().Msg("Crash reporting and tracing is entirely disabled. This is not recommended.")
+		log.Warn().Msg("Crash reporting is entirely disabled. This is not recommended.")
 
 		return
 	}
@@ -32,6 +32,7 @@ func Init(cnf *Config) {
 		HTTPClient:       httpClient,
 		Dsn:              cnf.DSN,
 		Environment:      cnf.Environment,
+		EnableTracing:    true,
 		Release:          cnf.Release,
 		Debug:            cnf.Debug,
 		TracesSampleRate: 1.0,
