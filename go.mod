@@ -3,8 +3,8 @@ module go.codecomet.dev/core
 go 1.19
 
 require (
-	github.com/getsentry/sentry-go v0.20.0
-	github.com/getsentry/sentry-go/otel v0.20.0
+	github.com/getsentry/sentry-go v0.21.0
+	github.com/getsentry/sentry-go/otel v0.21.0
 	github.com/rs/zerolog v1.29.1
 	go.opentelemetry.io/otel v1.15.1
 	go.opentelemetry.io/otel/exporters/jaeger v1.15.1
