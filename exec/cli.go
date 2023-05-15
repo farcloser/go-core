@@ -20,7 +20,7 @@ func Resolve(bin string) (string, error) {
 	out = strings.Trim(out, "\n")
 
 	if err != nil {
-		err = fmt.Errorf("Resolve errored with: %w", err)
+		err = fmt.Errorf("resolve errored with: %w", err)
 	}
 
 	return out, err
