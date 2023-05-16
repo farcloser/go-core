@@ -4,6 +4,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"reflect"
 	"runtime"
 
 	"go.codecomet.dev/core/ca"
@@ -68,7 +69,14 @@ func (obj *Core) Load(overload ...interface{}) error {
 	var err error
 	if len(overload) > 0 {
 		err = Read(overload[0], obj.Location...)
-		umask(overload[0].(*Core).Umask) //nolint:forcetypeassert
+
+		field := reflect.ValueOf(overload[0]).Elem().FieldByName("Core")
+		if field != (reflect.Value{}) {
+			embed, ok := field.Interface().(*Core)
+			if ok {
+				umask(embed.Umask)
+			}
+		}
 
 		return err
 	}
@@ -81,7 +89,13 @@ func (obj *Core) Load(overload ...interface{}) error {
 
 func (obj *Core) Save(overload ...interface{}) error {
 	if len(overload) > 0 {
-		umask(overload[0].(*Core).Umask) //nolint:forcetypeassert
+		field := reflect.ValueOf(overload[0]).Elem().FieldByName("Core")
+		if field != (reflect.Value{}) {
+			embed, ok := field.Interface().(*Core)
+			if ok {
+				umask(embed.Umask)
+			}
+		}
 
 		return Write(overload[0], obj.Location...)
 	}

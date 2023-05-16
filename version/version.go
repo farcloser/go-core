@@ -5,42 +5,47 @@ import (
 	"runtime/debug"
 )
 
-var (
-	Version  = "devel"       //nolint:gochecknoglobals
-	Revision = "development" //nolint:gochecknoglobals
-)
+const unknown = "unknown"
+
+var Version = unknown //nolint:gochecknoglobals
 
 type Report struct {
 	Version   string `json:"version,omitempty"`
 	Revision  string `json:"revision,omitempty"`
+	Dirty     bool   `json:"dirty,omitempty"`
 	OS        string `json:"os,omitempty"`
 	Arch      string `json:"arch,omitempty"`
 	GoVersion string `json:"goVersion,omitempty"`
 
-	Report *debug.BuildInfo `json:"fullReport,omitempty"`
+	Raw *debug.BuildInfo `json:"rawReport,omitempty"`
 }
 
 func NewReport() *Report {
-	goVersion := "unknown"
-	revision := ""
+	rep := &Report{
+		Version:   Version,
+		Revision:  unknown,
+		OS:        runtime.GOOS,
+		Arch:      runtime.GOARCH,
+		GoVersion: unknown,
+		Dirty:     false,
+	}
 
 	buildInfo, ok := debug.ReadBuildInfo()
 	if ok {
-		goVersion = buildInfo.GoVersion
-		// XXX does not work as expected unless go install-ed https://github.com/golang/go/issues/51279
+		rep.Raw = buildInfo
+		rep.GoVersion = buildInfo.GoVersion
+		// XXX is this really working as expected? may depend on go version...
+		// unless go install-ed https://github.com/golang/go/issues/51279
 		for _, s := range buildInfo.Settings {
 			if s.Key == "vcs.revision" {
-				revision = s.Value[:9]
+				rep.Revision = s.Value[:7]
+			}
+
+			if s.Key == "vcs.modified" && s.Value == "true" {
+				rep.Dirty = true
 			}
 		}
 	}
 
-	return &Report{
-		Version:   Version,
-		Revision:  revision,
-		OS:        runtime.GOOS,
-		Arch:      runtime.GOARCH,
-		GoVersion: goVersion,
-		Report:    buildInfo,
-	}
+	return rep
 }
