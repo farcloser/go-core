@@ -16,14 +16,14 @@ import (
 
 func Resolve(bin string) (string, error) {
 	o, err := exec.Command("which", bin).Output()
+	if err != nil {
+		return "", fmt.Errorf("resolve errored with: %w", err)
+	}
+
 	out := string(o)
 	out = strings.Trim(out, "\n")
 
-	if err != nil {
-		err = fmt.Errorf("resolve errored with: %w", err)
-	}
-
-	return out, err
+	return out, nil
 }
 
 func New(defaultBin string, envBin string) *Commander {

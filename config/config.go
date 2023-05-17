@@ -8,6 +8,7 @@ import (
 	"runtime"
 
 	"go.codecomet.dev/core/ca"
+	"go.codecomet.dev/core/filesystem"
 	"go.codecomet.dev/core/log"
 	"go.codecomet.dev/core/network"
 	"go.codecomet.dev/core/reporter"
@@ -15,7 +16,7 @@ import (
 )
 
 type Core struct {
-	Location []string
+	inheritedUmask int
 
 	Umask     int               `json:"umask,omitempty"`
 	Reporter  *reporter.Config  `json:"reporter,omitempty"`
@@ -23,13 +24,23 @@ type Core struct {
 	Telemetry *telemetry.Config `json:"telemetry,omitempty"`
 	Client    *network.Config   `json:"client,omitempty"`
 	Server    *network.Config   `json:"server,omitempty"`
+
+	Location               []string    `json:"-"`
+	DefaultFilePermissions os.FileMode `json:"-"`
+	DefaultDirPermissions  os.FileMode `json:"-"`
+	PrivateFilePermissions os.FileMode `json:"-"`
+	PrivateDirPermissions  os.FileMode `json:"-"`
 }
 
 func New(trustCA bool, appName string, location ...string) *Core {
-	cnf := &Core{
-		Location: append([]string{appName}, location...),
+	inheritedUmask := umask(0)
+	umask(inheritedUmask)
+	filesystem.Mask = os.FileMode(inheritedUmask)
 
-		Umask: defaultUmask,
+	cnf := &Core{
+		inheritedUmask: inheritedUmask,
+
+		Location: append([]string{appName}, location...),
 
 		Client: &network.Config{
 			TLSMin:              defaultTLSClientMinVersion,
@@ -51,9 +62,13 @@ func New(trustCA bool, appName string, location ...string) *Core {
 		Logger: &log.Config{
 			Level: defaultLogLevel,
 		},
+
+		DefaultFilePermissions: defaultFilePerms,
+		DefaultDirPermissions:  defaultDirPerms,
+		PrivateFilePermissions: privateFilePerms,
+		PrivateDirPermissions:  privateDirPerms,
 	}
 
-	umask(cnf.Umask)
 	cnf.Client.Resolve = cnf.Resolve
 	cnf.Server.Resolve = cnf.Resolve
 
@@ -73,7 +88,8 @@ func (obj *Core) Load(overload ...interface{}) error {
 		field := reflect.ValueOf(overload[0]).Elem().FieldByName("Core")
 		if field != (reflect.Value{}) {
 			embed, ok := field.Interface().(*Core)
-			if ok {
+			if ok && embed.Umask != embed.inheritedUmask {
+				filesystem.Mask = os.FileMode(embed.Umask)
 				umask(embed.Umask)
 			}
 		}
@@ -82,7 +98,11 @@ func (obj *Core) Load(overload ...interface{}) error {
 	}
 
 	err = Read(obj, obj.Location...)
-	umask(obj.Umask)
+
+	if obj.Umask != obj.inheritedUmask {
+		filesystem.Mask = os.FileMode(obj.Umask)
+		umask(obj.Umask)
+	}
 
 	return err
 }
@@ -92,7 +112,8 @@ func (obj *Core) Save(overload ...interface{}) error {
 		field := reflect.ValueOf(overload[0]).Elem().FieldByName("Core")
 		if field != (reflect.Value{}) {
 			embed, ok := field.Interface().(*Core)
-			if ok {
+			if ok && embed.Umask != embed.inheritedUmask {
+				filesystem.Mask = os.FileMode(embed.Umask)
 				umask(embed.Umask)
 			}
 		}
@@ -100,7 +121,10 @@ func (obj *Core) Save(overload ...interface{}) error {
 		return Write(overload[0], obj.Location...)
 	}
 
-	umask(obj.Umask)
+	if obj.Umask != obj.inheritedUmask {
+		filesystem.Mask = os.FileMode(obj.Umask)
+		umask(obj.Umask)
+	}
 
 	return Write(obj, obj.Location...)
 }
@@ -119,7 +143,7 @@ func (obj *Core) Resolve(location ...string) string {
 	}
 
 	// XXX ignore errors?
-	_ = os.MkdirAll(path.Dir(loc), DefaultDirPerms)
+	_ = os.MkdirAll(path.Dir(loc), obj.DefaultDirPermissions)
 
 	return loc
 }
@@ -131,7 +155,7 @@ func (obj *Core) GetRunRoot() string {
 	loc := path.Join(home, "."+obj.Location[0], "run")
 
 	// XXX ignore errors?
-	_ = os.MkdirAll(path.Dir(loc), DefaultDirPerms)
+	_ = os.MkdirAll(path.Dir(loc), defaultDirPerms)
 
 	return loc
 }
@@ -151,9 +175,15 @@ func (obj *Core) GetDataRoot() string {
 	}
 
 	// XXX ignore errors?
-	_ = os.MkdirAll(path.Dir(loc), DefaultDirPerms)
+	_ = os.MkdirAll(path.Dir(loc), obj.DefaultDirPermissions)
 
 	return loc
+}
+
+func (obj *Core) GetHome() string {
+	home, _ := os.UserHomeDir()
+
+	return home
 }
 
 func (obj *Core) GetCacheRoot() string {
@@ -162,7 +192,7 @@ func (obj *Core) GetCacheRoot() string {
 	loc := path.Join(base, obj.Location[0])
 
 	// XXX ignore errors?
-	_ = os.MkdirAll(path.Dir(loc), DefaultDirPerms)
+	_ = os.MkdirAll(path.Dir(loc), obj.DefaultDirPermissions)
 
 	return loc
 }
@@ -180,7 +210,7 @@ func (obj *Core) GetLogRoot() string {
 	}
 
 	// XXX ignore errors?
-	_ = os.MkdirAll(path.Dir(loc), DefaultDirPerms)
+	_ = os.MkdirAll(path.Dir(loc), obj.DefaultDirPermissions)
 
 	return loc
 }

@@ -8,7 +8,6 @@ import (
 )
 
 const (
-	defaultUmask               = 0o077
 	defaultLogLevel            = log.InfoLevel
 	defaultTLSClientMinVersion = tls.VersionTLS12
 )

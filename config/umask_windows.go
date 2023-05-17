@@ -2,5 +2,6 @@
 
 package config
 
-func umask(mask int) {
+func umask(mask int) int {
+	return 0
 }

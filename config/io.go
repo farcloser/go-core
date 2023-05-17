@@ -52,7 +52,7 @@ func Write(cfg interface{}, location ...string) error {
 	mut.Lock()
 	defer mut.Unlock()
 
-	err := os.MkdirAll(path.Dir(loc), DefaultDirPerms)
+	err := os.MkdirAll(path.Dir(loc), defaultDirPerms)
 	if err != nil {
 		return fmt.Errorf("failed creating config parent directory %w", err)
 	}
@@ -62,7 +62,7 @@ func Write(cfg interface{}, location ...string) error {
 		return fmt.Errorf("failed marshalling config json %w", err)
 	}
 
-	return filesystem.WriteFile(loc, data, DefaultFilePerms)
+	return filesystem.WriteFile(loc, data, defaultFilePerms)
 }
 
 // Delete destroys the config file.

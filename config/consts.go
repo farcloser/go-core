@@ -1,6 +1,8 @@
 package config
 
 const (
-	DefaultFilePerms = 0o644
-	DefaultDirPerms  = 0o755
+	defaultFilePerms = 0o644
+	defaultDirPerms  = 0o755
+	privateFilePerms = 0o600
+	privateDirPerms  = 0o700
 )
