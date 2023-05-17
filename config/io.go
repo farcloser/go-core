@@ -36,7 +36,9 @@ func Read(cfg interface{}, location ...string) error {
 
 	data, err := os.ReadFile(loc)
 	if err != nil {
-		return fmt.Errorf("failed reading config file %w", err)
+		// XXX Ignore file not found for now. This is suboptimal.
+		return nil
+		// return fmt.Errorf("failed reading config file %w", err)
 	}
 
 	return json.Unmarshal(data, &cfg)
