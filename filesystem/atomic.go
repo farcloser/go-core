@@ -29,17 +29,12 @@ const defaultUmask = 0o077
 
 var Mask = os.FileMode(defaultUmask) //nolint:gochecknoglobals
 
-// WriteFile atomically writes data to a file by first writing to a
-// temp file and calling rename.
+// WriteFile atomically writes data to a file by first writing to a temp file and calling rename.
 func WriteFile(filename string, data []byte, perm os.FileMode) error {
-	buf := bytes.NewBuffer(data)
+	reader := bytes.NewBuffer(data)
+	dataSize := int64(len(data))
+	perm = (^Mask) & perm
 
-	return atomicWriteFile(filename, buf, int64(len(data)), (^Mask)&perm)
-}
-
-// atomicWriteFile writes data to a file by first writing to a temp
-// file and calling rename.
-func atomicWriteFile(filename string, reader io.Reader, dataSize int64, perm os.FileMode) error {
 	tmpFile, err := os.CreateTemp(filepath.Dir(filename), ".tmp-"+filepath.Base(filename))
 	if err != nil {
 		return err
