@@ -11,9 +11,9 @@ import (
 )
 
 // Init should be called when the app starts, from a config object.
-func Init(cnf *Config) {
+func Init(conf *Config) {
 	// This mostly should be the responsibility of the app itself but hey
-	zerolog.SetGlobalLevel(cnf.Level)
+	zerolog.SetGlobalLevel(conf.Level)
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 

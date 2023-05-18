@@ -2,18 +2,15 @@ package reporter
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/getsentry/sentry-go"
 	"go.codecomet.dev/core/log"
 	"go.codecomet.dev/core/network"
 )
 
-const flushTimeout = 2 * time.Second
-
 // Init should be called when the app starts, from a config object.
-func Init(cnf *Config) {
-	if cnf.Disabled {
+func Init(conf *Config) {
+	if conf.Disabled {
 		log.Warn().Msg("Crash reporting is entirely disabled. This is not recommended.")
 
 		return
@@ -21,20 +18,21 @@ func Init(cnf *Config) {
 
 	log.Debug().Msg("Initializing crash reporter with config")
 
-	httpClient := cnf.httpClient
-	if httpClient == nil {
-		httpClient = &http.Client{}
+	httpClient := &http.Client{}
+	if conf.httpClient != nil {
+		httpClient = conf.httpClient
 	}
 
-	httpClient.Transport = network.Get().Transport()
+	// XXX tricky: this means network MUST be initialized before reporter
+	httpClient.Transport = network.GetTransport()
 
 	err := sentry.Init(sentry.ClientOptions{
 		HTTPClient:       httpClient,
-		Dsn:              cnf.DSN,
-		Environment:      cnf.Environment,
+		Dsn:              conf.DSN,
+		Environment:      conf.Environment,
 		EnableTracing:    true,
-		Release:          cnf.Release,
-		Debug:            cnf.Debug,
+		Release:          conf.Release,
+		Debug:            conf.Debug,
 		TracesSampleRate: 1.0,
 	})
 	if err != nil {

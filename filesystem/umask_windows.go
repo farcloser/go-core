@@ -1,6 +1,6 @@
 //go:build windows
 
-package config
+package filesystem
 
 func umask(mask int) int {
 	return 0

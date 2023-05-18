@@ -1,6 +1,7 @@
 package network
 
 import (
+	"crypto/tls"
 	"net/http"
 
 	"go.codecomet.dev/core/log"
@@ -9,18 +10,21 @@ import (
 var network *Network //nolint:gochecknoglobals
 
 // Init should be called when the app starts, from config objects.
-func Init(client *Config, server *Config) {
+func Init(clientConf *Config, serverConf *Config) {
 	log.Debug().Msg("Initializing network core with config")
 
 	network = &Network{
-		clientConfig: client,
-		serverConfig: server,
+		clientConfig: clientConf,
+		serverConfig: serverConf,
 	}
 
 	http.DefaultTransport = network.Transport()
 }
 
-// Get returns the network instance, from which a new Transport or TLSConfig object can be retrieved.
-func Get() *Network {
-	return network
+func GetTLSConfig() *tls.Config {
+	return network.TLSConfig()
+}
+
+func GetTransport() *Transport {
+	return network.Transport()
 }

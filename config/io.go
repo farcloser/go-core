@@ -13,7 +13,7 @@ import (
 
 var mut *sync.Mutex //nolint:gochecknoglobals
 
-func Absolute(location ...string) string {
+func absolute(location ...string) string {
 	loc := path.Join(location...)
 
 	if !filepath.IsAbs(loc) {
@@ -24,8 +24,8 @@ func Absolute(location ...string) string {
 	return loc
 }
 
-func Read(cfg interface{}, location ...string) error {
-	loc := Absolute(location...)
+func read(cfg interface{}, location ...string) error {
+	loc := absolute(location...)
 
 	if mut == nil {
 		mut = &sync.Mutex{}
@@ -35,17 +35,16 @@ func Read(cfg interface{}, location ...string) error {
 	defer mut.Unlock()
 
 	data, err := os.ReadFile(loc)
+
 	if err != nil {
-		// XXX Ignore file not found for now. This is suboptimal.
-		return nil
-		// return fmt.Errorf("failed reading config file %w", err)
+		return fmt.Errorf("failed reading config file %w", err)
 	}
 
 	return json.Unmarshal(data, &cfg)
 }
 
-func Write(cfg interface{}, location ...string) error {
-	loc := Absolute(location...)
+func write(cfg interface{}, location ...string) error {
+	loc := absolute(location...)
 
 	if mut == nil {
 		mut = &sync.Mutex{}
@@ -54,7 +53,7 @@ func Write(cfg interface{}, location ...string) error {
 	mut.Lock()
 	defer mut.Unlock()
 
-	err := os.MkdirAll(path.Dir(loc), defaultDirPerms)
+	err := os.MkdirAll(path.Dir(loc), filesystem.DirPermissionsDefault)
 	if err != nil {
 		return fmt.Errorf("failed creating config parent directory %w", err)
 	}
@@ -64,12 +63,11 @@ func Write(cfg interface{}, location ...string) error {
 		return fmt.Errorf("failed marshalling config json %w", err)
 	}
 
-	return filesystem.WriteFile(loc, data, defaultFilePerms)
+	return filesystem.WriteFile(loc, data, filesystem.FilePermissionsDefault)
 }
 
-// Delete destroys the config file.
-func Delete(location ...string) error {
-	loc := Absolute(location...)
+func remove(location ...string) error {
+	loc := absolute(location...)
 
 	if mut == nil {
 		mut = &sync.Mutex{}

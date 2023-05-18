@@ -1,8 +1,9 @@
+//nolint:ireturn
 package telemetry
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"io"
 	"time"
 
@@ -18,24 +19,22 @@ import (
 
 const closeTimeout = 5 * time.Second
 
-var errUnsupportedProviderType = errors.New("unsupported provider type")
-
 type TracerProvider = trace.TracerProvider
 
-func GetTracerProvider() TracerProvider { //nolint:ireturn
+func GetTracerProvider() TracerProvider {
 	return otel.GetTracerProvider()
 }
 
-func Init(cnf *Config) io.Closer {
-	if cnf.Disabled {
-		log.Warn().Msg("Telemetry disabled.")
+func Init(conf *Config) io.Closer {
+	if conf.Disabled {
+		log.Warn().Msg("Telemetry is disabled.")
 
 		return &noopCloser{}
 	}
 
-	prov, err := provider(cnf.Type, cnf.Endpoint, cnf.ServiceName)
+	prov, err := provider(conf.Type, conf.Endpoint, conf.ServiceName)
 	if err != nil {
-		log.Fatal().Err(err).Str("type", string(cnf.Type)).Msg("Failed creating telemetry provider")
+		log.Fatal().Err(err).Str("type", string(conf.Type)).Msg("Failed creating telemetry provider")
 	}
 
 	// Register with OTEL
@@ -88,16 +87,16 @@ func provider(expType ExporterType, url string, serviceName string) (*sdktrace.T
 
 	*/
 	default:
-		err = errUnsupportedProviderType
+		err = ErrUnsupportedProviderType
 	}
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create provider: %w", err)
 	}
 
-	tp := sdktrace.NewTracerProvider(
+	tracerProvider := sdktrace.NewTracerProvider(
 		opts...,
 	)
 
-	return tp, nil
+	return tracerProvider, nil
 }

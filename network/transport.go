@@ -26,7 +26,7 @@ func (adt *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 
 	resp, err := adt.Transport.RoundTrip(req)
 	if err != nil {
-		err = fmt.Errorf("RoungTrip error: %w", err)
+		err = fmt.Errorf("RoundTrip error: %w", err)
 	}
 
 	return resp, err
