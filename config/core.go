@@ -1,14 +1,12 @@
 package config
 
 import (
-	"errors"
+	"fmt"
 	"os"
 	"path"
 	"path/filepath"
-	"reflect"
 	"runtime"
 
-	"go.codecomet.dev/core/ca"
 	"go.codecomet.dev/core/filesystem"
 	"go.codecomet.dev/core/log"
 	"go.codecomet.dev/core/network"
@@ -16,12 +14,9 @@ import (
 	"go.codecomet.dev/core/telemetry"
 )
 
-func New(trustCA bool, appName string, location ...string) *Core {
-	// Init filesystem first (capture the current, actual umask before we do anything)
-	filesystem.Init()
-
+func New(appName string, location ...string) *Core {
 	conf := &Core{
-		Location: append([]string{appName}, location...),
+		location: append([]string{appName}, location...),
 
 		Client: &network.Config{
 			TLSMin:              defaultTLSClientMinVersion,
@@ -31,6 +26,7 @@ func New(trustCA bool, appName string, location ...string) *Core {
 			DisallowSystemRoot:  false,
 			CertPath:            defaultCertPath,
 			KeyPath:             defaultKeyPath,
+			RootCAs:             []string{},
 		},
 
 		Server: &network.Config{
@@ -48,16 +44,7 @@ func New(trustCA bool, appName string, location ...string) *Core {
 	conf.Client.Resolve = conf.Resolve
 	conf.Server.Resolve = conf.Resolve
 
-	if trustCA {
-		conf.Server.ClientCA = ca.CodeComet
-		conf.Client.RootCAs = []string{ca.CodeComet}
-	}
-
 	return conf
-}
-
-type CoreConfig interface {
-	Resolve(...string) string
 }
 
 type Core struct {
@@ -69,86 +56,57 @@ type Core struct {
 
 	Umask int `json:"umask,omitempty"`
 
-	Location []string `json:"-"`
+	location []string
+}
+
+func (obj *Core) Trust(ca ...string) {
+	if len(ca) > 0 {
+		obj.Server.ClientCA = ca[0]
+		obj.Client.RootCAs = ca
+	}
 }
 
 func (obj *Core) Resolve(location ...string) string {
 	// Get the absolute path of the containing dir of the config file, resolved against UserConfigDir
-	base := absolute(obj.Location[:len(obj.Location)-1]...)
+	base := absolute(obj.location[:len(obj.location)-1]...)
+
+	// If the desired location is not absolute, resolve against above
+	loc := path.Join(location...)
+	if !filepath.IsAbs(loc) {
+		loc = path.Join(append([]string{base}, location...)...)
+	}
+
+	return loc
+}
+
+func (obj *Core) Ensure(location ...string) error {
+	// Get the absolute path of the containing dir of the config file, resolved against UserConfigDir
+	base := absolute(obj.location[:len(obj.location)-1]...)
 
 	loc := path.Join(location...)
 	if !filepath.IsAbs(loc) {
 		loc = path.Join(append([]string{base}, location...)...)
 	}
 
-	// XXX ignore errors?
-	_ = os.MkdirAll(path.Dir(loc), filesystem.DirPermissionsDefault)
-
-	return loc
-}
-
-func (obj *Core) Exist() bool {
-	_, err := os.Stat(obj.Resolve(obj.Location...))
-
-	return err == nil || !errors.Is(err, os.ErrNotExist)
-}
-
-func (obj *Core) Load(overload ...interface{}) error {
-	var err error
-	if len(overload) > 0 {
-		err = read(overload[0], obj.Location...)
-
-		field := reflect.ValueOf(overload[0]).Elem().FieldByName("Core")
-		if field != (reflect.Value{}) {
-			embed, ok := field.Interface().(*Core)
-			if ok {
-				filesystem.SetUmask(embed.Umask)
-			}
-		}
-
-		return err
+	err := os.MkdirAll(path.Dir(loc), filesystem.DirPermissionsDefault)
+	if err != nil {
+		err = fmt.Errorf("failed to ensure parent directory existence for %s: %w", loc, err)
 	}
-
-	err = read(obj, obj.Location...)
-	filesystem.SetUmask(obj.Umask)
 
 	return err
 }
 
-func (obj *Core) Save(overload ...interface{}) error {
-	if len(overload) > 0 {
-		field := reflect.ValueOf(overload[0]).Elem().FieldByName("Core")
-		if field != (reflect.Value{}) {
-			embed, ok := field.Interface().(*Core)
-			if ok {
-				filesystem.SetUmask(embed.Umask)
-			}
-		}
-
-		return write(overload[0], obj.Location...)
-	}
-
+func (obj *Core) OnIO() {
+	// Note: calling init everytime we load is not super efficient, but then, how often does that happen?
+	// Init filesystem first (capture the current, actual umask before we do anything)
+	filesystem.Init()
+	// Now, set the umask to whatever
 	filesystem.SetUmask(obj.Umask)
-
-	return write(obj, obj.Location...)
 }
 
-func (obj *Core) Remove() error {
-	return remove(obj.Location...)
+func (obj *Core) GetLocation() []string {
+	return obj.location
 }
-
-// XXX replace this with GetDataDir or GetCacheDir
-/*
-func (obj *Core) GetRunRoot() string {
-	home, _ := os.UserHomeDir()
-	loc := path.Join(home, "."+obj.Location[0], "run")
-
-	// XXX ignore errors?
-	_ = os.MkdirAll(path.Dir(loc), defaultDirPerms)
-
-	return loc
-}
-*/
 
 func (obj *Core) GetDataRoot() string {
 	var loc string
@@ -158,9 +116,9 @@ func (obj *Core) GetDataRoot() string {
 	switch runtime.GOOS {
 	case "darwin":
 		// XXX figure out impact on iCloud auto backup thing and containers
-		loc = path.Join(base, "Library", "Application Support", obj.Location[0])
+		loc = path.Join(base, "Library", "Application Support", obj.location[0])
 	default:
-		loc = path.Join(base, "."+obj.Location[0])
+		loc = path.Join(base, "."+obj.location[0])
 	}
 
 	// XXX ignore errors?
@@ -178,7 +136,7 @@ func (obj *Core) GetHome() string {
 func (obj *Core) GetCacheRoot() string {
 	base, _ := os.UserCacheDir()
 
-	loc := path.Join(base, obj.Location[0])
+	loc := path.Join(base, obj.location[0])
 
 	// XXX ignore errors?
 	_ = os.MkdirAll(path.Dir(loc), filesystem.DirPermissionsDefault)
@@ -193,9 +151,9 @@ func (obj *Core) GetLogRoot() string {
 
 	switch runtime.GOOS {
 	case "darwin":
-		loc = path.Join(base, "Library", "Logs", obj.Location[0])
+		loc = path.Join(base, "Library", "Logs", obj.location[0])
 	default:
-		loc = "/var/log/" + obj.Location[0]
+		loc = "/var/log/" + obj.location[0]
 	}
 
 	// XXX ignore errors?

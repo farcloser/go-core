@@ -35,7 +35,6 @@ func read(cfg interface{}, location ...string) error {
 	defer mut.Unlock()
 
 	data, err := os.ReadFile(loc)
-
 	if err != nil {
 		return fmt.Errorf("failed reading config file %w", err)
 	}
