@@ -1,13 +1,8 @@
 package app
 
-import (
-	"go.codecomet.dev/core/config"
-	"go.codecomet.dev/core/log"
-	"go.codecomet.dev/core/network"
-	"go.codecomet.dev/core/reporter"
-	"go.codecomet.dev/core/telemetry"
-)
-
+// Use this for minimalistic apps that do not need configuration beyond Core,
+// or take this as an example for your own app / config.
+/*
 func New(appName string, location ...string) *config.Core {
 	// Create a new config object
 	conf := config.New(appName, location...)
@@ -31,10 +26,15 @@ func New(appName string, location ...string) *config.Core {
 	network.Init(conf.Client, conf.Server)
 
 	// Init reporter
-	reporter.Init(conf.Reporter)
+	if conf.Reporter != nil {
+		reporter.Init(conf.Reporter)
+	}
 
 	// Init telemetry
-	telemetry.Init(conf.Telemetry)
+	if conf.Telemetry != nil {
+		telemetry.Init(conf.Telemetry)
+	}
 
 	return conf
 }
+*/
