@@ -2,8 +2,8 @@ package log
 
 import (
 	"bufio"
+	"io"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/rs/zerolog"
@@ -30,22 +30,22 @@ func GetLevel() Level {
 	return zerolog.GlobalLevel()
 }
 
-func DebugSink(o string) {
-	scanner := bufio.NewScanner(strings.NewReader(o))
+func DebugSink(reader io.Reader) {
+	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
 		log.Debug().Msg(scanner.Text())
 	}
 }
 
-func WarnSink(o string) {
-	scanner := bufio.NewScanner(strings.NewReader(o))
+func WarnSink(reader io.Reader) {
+	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
 		log.Warn().Msg(scanner.Text())
 	}
 }
 
-func ErrorSink(o string) {
-	scanner := bufio.NewScanner(strings.NewReader(o))
+func ErrorSink(reader io.Reader) {
+	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
 		log.Error().Msg(scanner.Text())
 	}
