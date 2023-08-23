@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"time"
 
-	"go.codecomet.dev/core/log"
+	"go.farcloser.world/core/log"
 )
 
 const (

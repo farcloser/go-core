@@ -28,6 +28,7 @@ import (
 // WriteFile atomically writes data to a file by first writing to a temp file and calling rename.
 func WriteFile(filename string, data []byte, perm os.FileMode) error {
 	reader := bytes.NewBuffer(data)
+
 	dataSize := int64(len(data))
 	perm = (^os.FileMode(currentMask)) & perm
 

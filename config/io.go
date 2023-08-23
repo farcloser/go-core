@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"go.codecomet.dev/core/filesystem"
+	"go.farcloser.world/core/filesystem"
 )
 
 var mut *sync.Mutex //nolint:gochecknoglobals

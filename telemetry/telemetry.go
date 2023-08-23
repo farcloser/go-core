@@ -8,7 +8,7 @@ import (
 	"time"
 
 	sentryotel "github.com/getsentry/sentry-go/otel"
-	"go.codecomet.dev/core/log"
+	"go.farcloser.world/core/log"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/jaeger"
 	"go.opentelemetry.io/otel/sdk/resource"

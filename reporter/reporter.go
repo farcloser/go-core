@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/getsentry/sentry-go"
-	"go.codecomet.dev/core/log"
-	"go.codecomet.dev/core/network"
+	"go.farcloser.world/core/log"
+	"go.farcloser.world/core/network"
 )
 
 // Init should be called when the app starts, from a config object.

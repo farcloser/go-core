@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"net/http"
 
-	"go.codecomet.dev/core/log"
+	"go.farcloser.world/core/log"
 )
 
 var network *Network //nolint:gochecknoglobals

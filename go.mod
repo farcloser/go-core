@@ -1,4 +1,4 @@
-module go.codecomet.dev/core
+module go.farcloser.world/core
 
 go 1.19
 

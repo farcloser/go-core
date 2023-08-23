@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"go.codecomet.dev/core/filesystem"
-	"go.codecomet.dev/core/log"
-	"go.codecomet.dev/core/network"
-	"go.codecomet.dev/core/reporter"
-	"go.codecomet.dev/core/telemetry"
+	"go.farcloser.world/core/filesystem"
+	"go.farcloser.world/core/log"
+	"go.farcloser.world/core/network"
+	"go.farcloser.world/core/reporter"
+	"go.farcloser.world/core/telemetry"
 )
 
 func New(appName string, location ...string) *Core {

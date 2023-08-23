@@ -1,4 +1,4 @@
-# CodeComet core go library
+# Farcloser core go library
 
 Provides basics to be used by all our go projects, specifically:
 - logging (based on zerolog)
@@ -21,7 +21,7 @@ Install pkgsite: go install golang.org/x/pkgsite/cmd/pkgsite@latest
 
 Run it: pkgsite
 
-Open: http://localhost:8080/github.com/go.codecomet.dev/core
+Open: http://localhost:8080/go.farcloser.world/core
 
 ### Charter
 

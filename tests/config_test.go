@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"go.codecomet.dev/core/config"
+	"go.farcloser.world/core/config"
 )
 
 func TestConfigLoadTargetDoesNotExist(t *testing.T) {
@@ -120,7 +120,7 @@ func TestConfigLoadWrongType(t *testing.T) {
 		}
 	}(tmpFile.Name())
 
-	_, err = io.Copy(tmpFile, bytes.NewBuffer([]byte("{\"umask\": \"foobar\"}")))
+	_, err = io.Copy(tmpFile, bytes.NewBufferString("{\"umask\": \"foobar\"}"))
 	if err != nil {
 		t.Fatalf("unexpected failure! %s", err)
 	}
