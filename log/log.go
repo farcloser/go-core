@@ -19,6 +19,8 @@ func Init(conf *Config) {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
 	zerolog.TimestampFunc = func() time.Time {
+		// XXX investigate this
+		//nolint:gosmopolitan
 		return time.Now().In(time.Local)
 	}
 }

@@ -13,10 +13,7 @@ linters:
     - ifshort
     - structcheck
     - nosnakecase
-    - rowserrcheck
-    - sqlclosecheck
-    - structcheck
-    - wastedassign
+
     # Too annoying
     - exhaustruct # this is fine without, usually
     - funlen # somewhat ridiculous
@@ -24,10 +21,8 @@ linters:
     - godox # just leave it alone
     # Not now
     - paralleltest
-    # Temporary out
+    # TODO(apostasie) Temporary out until we wrap up all of them
     - wrapcheck
-    - musttag
-    - gosmopolitan
 
 linters-settings:
   staticcheck:

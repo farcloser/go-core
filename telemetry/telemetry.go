@@ -21,6 +21,23 @@ const closeTimeout = 5 * time.Second
 
 type TracerProvider = trace.TracerProvider
 
+type noopCloser struct{}
+
+func (*noopCloser) Close() error {
+	return nil
+}
+
+type providerCloser struct {
+	*sdktrace.TracerProvider
+}
+
+func (t providerCloser) Close() error {
+	ctx, cancel := context.WithTimeout(context.Background(), closeTimeout)
+	defer cancel()
+
+	return t.Shutdown(ctx)
+}
+
 func GetTracerProvider() TracerProvider {
 	return otel.GetTracerProvider()
 }
@@ -43,23 +60,6 @@ func Init(conf *Config) io.Closer {
 	return providerCloser{
 		TracerProvider: prov,
 	}
-}
-
-type noopCloser struct{}
-
-func (*noopCloser) Close() error {
-	return nil
-}
-
-type providerCloser struct {
-	*sdktrace.TracerProvider
-}
-
-func (t providerCloser) Close() error {
-	ctx, cancel := context.WithTimeout(context.Background(), closeTimeout)
-	defer cancel()
-
-	return t.Shutdown(ctx)
 }
 
 func provider(expType ExporterType, url string, serviceName string) (*sdktrace.TracerProvider, error) {
