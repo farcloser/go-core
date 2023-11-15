@@ -15,6 +15,8 @@ import (
 	"go.farcloser.world/core/config"
 )
 
+const prefix = ".tmp-"
+
 func TestConfigLoadTargetDoesNotExist(t *testing.T) {
 	dir, _ := os.UserHomeDir()
 	conf := config.New(dir, "does", "not", "exist")
@@ -41,7 +43,7 @@ func TestConfigLoadTargetUnreadable(t *testing.T) {
 	dir, _ := os.UserHomeDir()
 	filename := path.Join(dir, "testunreadablefile")
 
-	tmpFile, err := os.CreateTemp(filepath.Dir(filename), ".tmp-"+filepath.Base(filename))
+	tmpFile, err := os.CreateTemp(filepath.Dir(filename), prefix+filepath.Base(filename))
 	if err != nil {
 		t.Fatalf("unexpected failure! %s", err)
 	}
@@ -76,7 +78,7 @@ func TestConfigLoadIsNotJSON(t *testing.T) {
 	dir, _ := os.UserHomeDir()
 	filename := path.Join(dir, "testnotjson")
 
-	tmpFile, err := os.CreateTemp(filepath.Dir(filename), ".tmp-"+filepath.Base(filename))
+	tmpFile, err := os.CreateTemp(filepath.Dir(filename), prefix+filepath.Base(filename))
 	if err != nil {
 		t.Fatalf("unexpected failure! %s", err)
 	}
@@ -108,7 +110,7 @@ func TestConfigLoadWrongType(t *testing.T) {
 	dir, _ := os.UserHomeDir()
 	filename := path.Join(dir, "wrongtype")
 
-	tmpFile, err := os.CreateTemp(filepath.Dir(filename), ".tmp-"+filepath.Base(filename))
+	tmpFile, err := os.CreateTemp(filepath.Dir(filename), prefix+filepath.Base(filename))
 	if err != nil {
 		t.Fatalf("unexpected failure! %s", err)
 	}

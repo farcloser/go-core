@@ -9,8 +9,9 @@ import (
 
 	sentryotel "github.com/getsentry/sentry-go/otel"
 	"go.farcloser.world/core/log"
+	"go.farcloser.world/core/network"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/jaeger"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
@@ -76,7 +77,17 @@ func provider(expType ExporterType, url string, serviceName string) (*sdktrace.T
 
 	switch expType {
 	case JAEGGER:
-		exp, err = jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(url)))
+		ctx := context.Background()
+
+		exp, err = otlptracehttp.New(
+			ctx,
+			otlptracehttp.WithEndpoint(url),
+			otlptracehttp.WithTLSClientConfig(network.GetTLSConfig()),
+		)
+		if err != nil {
+			panic(err)
+		}
+
 		opts = append(opts, sdktrace.WithBatcher(exp, sdktrace.WithMaxExportBatchSize(1)))
 	case SENTRY:
 		opts = append(opts, sdktrace.WithSpanProcessor(sentryotel.NewSentrySpanProcessor()))

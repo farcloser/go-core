@@ -13,9 +13,9 @@ type IConfiguration interface {
 	// Inheriting CoreConfig gives the following for free:
 
 	// Resolve returns a resolved path relative to the config file location
-	Resolve(...string) string
+	Resolve(all ...string) string
 	// Ensure makes sure the parent directory of the resolved path exists
-	Ensure(...string) error
+	Ensure(all ...string) error
 
 	// GetHome returns the user home directory
 	GetHome() string
