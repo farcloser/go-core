@@ -11,17 +11,19 @@ Provides basics to be used by all our go projects, specifically:
 
 ### Makefile
 
-* make lint
-* make lint-fix
-* make tidy
+```bash
+make lint
+make lint-fix
+make tidy
+```
 
 ### Local documentation
 
-Install pkgsite: go install golang.org/x/pkgsite/cmd/pkgsite@latest
-
-Run it: pkgsite
-
-Open: http://localhost:8080/go.farcloser.world/core
+```bash
+go install golang.org/x/pkgsite/cmd/pkgsite@latest
+pkgsite
+open http://localhost:8080/go.farcloser.world/core
+```
 
 ### Charter
 
