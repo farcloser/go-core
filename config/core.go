@@ -161,3 +161,14 @@ func (obj *Core) GetLogRoot() string {
 
 	return loc
 }
+
+func absolute(location ...string) string {
+	loc := path.Join(location...)
+
+	if !filepath.IsAbs(loc) {
+		dir, _ := os.UserConfigDir()
+		loc = path.Join(dir, loc)
+	}
+
+	return loc
+}

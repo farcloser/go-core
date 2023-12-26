@@ -17,10 +17,9 @@ func New(appName string, location ...string) *config.Core {
 			log.Fatal().Err(err).Msgf("Configuration file is invalid and needs to be fixed or removed: %s",
 				conf.Resolve(conf.GetLocation()...))
 		}
+		// Re-init logger with values
+		log.Init(conf.Logger)
 	}
-
-	// Re-init logger with values
-	log.Init(conf.Logger)
 
 	// Init network NOW before anything else - order matters!
 	network.Init(conf.Client, conf.Server)

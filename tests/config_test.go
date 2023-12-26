@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"go.farcloser.world/core/loader"
 	"io"
 	"io/fs"
 	"os"
@@ -20,7 +21,7 @@ const prefix = ".tmp-"
 func TestConfigLoadTargetDoesNotExist(t *testing.T) {
 	dir, _ := os.UserHomeDir()
 	conf := config.New(dir, "does", "not", "exist")
-	err := config.Load(conf)
+	err := loader.Load(conf)
 
 	if err == nil || !errors.Is(err, fs.ErrNotExist) {
 		t.Fatalf("should have returned fs.ErrNotExist: %s", err)
@@ -30,7 +31,7 @@ func TestConfigLoadTargetDoesNotExist(t *testing.T) {
 func TestConfigLoadTargetIsADirectory(t *testing.T) {
 	dir, _ := os.UserHomeDir()
 	conf := config.New(dir, ".")
-	err := config.Load(conf)
+	err := loader.Load(conf)
 	//	t.Fatalf("should have returned fs.PathError: %s", err)
 
 	var pe *fs.PathError
@@ -68,7 +69,7 @@ func TestConfigLoadTargetUnreadable(t *testing.T) {
 	d, f := path.Split(tmpFile.Name())
 	conf := config.New(d, f)
 
-	err = config.Load(conf)
+	err = loader.Load(conf)
 	if err == nil || !errors.Is(err, fs.ErrPermission) {
 		t.Fatalf("should have returned fs.ErrPermission: %s", err)
 	}
@@ -100,7 +101,7 @@ func TestConfigLoadIsNotJSON(t *testing.T) {
 
 	var pe *json.SyntaxError
 
-	err = config.Load(conf)
+	err = loader.Load(conf)
 	if err == nil || !errors.As(err, &pe) {
 		t.Fatalf("should have returned json.SyntaxError: %s", err)
 	}
@@ -135,7 +136,7 @@ func TestConfigLoadWrongType(t *testing.T) {
 	d, f := path.Split(tmpFile.Name())
 	conf := config.New(d, f)
 
-	err = config.Load(conf)
+	err = loader.Load(conf)
 
 	var pe *json.UnmarshalTypeError
 	if err == nil || !errors.As(err, &pe) {
