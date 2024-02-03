@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"go.farcloser.world/core/loader"
 	"io"
 	"io/fs"
 	"os"
@@ -14,6 +13,7 @@ import (
 	"testing"
 
 	"go.farcloser.world/core/config"
+	"go.farcloser.world/core/loader"
 )
 
 const prefix = ".tmp-"

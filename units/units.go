@@ -3,6 +3,7 @@
 package units
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -30,6 +31,11 @@ const (
 	precision     = 4
 	base          = 1024.0
 	decimalBase   = 1000
+)
+
+var (
+	ErrInvalidSize   = errors.New("invalid size")
+	ErrInvalidSuffix = errors.New("invalid suffix")
 )
 
 type unitMap map[byte]int64
@@ -102,7 +108,7 @@ func parseSize(sizeStr string, uMap unitMap) (int64, error) {
 	sep := strings.LastIndexAny(sizeStr, "01234567890. ")
 	if sep == -1 {
 		// There should be at least a digit.
-		return -1, fmt.Errorf("invalid size: '%s'", sizeStr)
+		return -1, fmt.Errorf("%w: '%s'", ErrInvalidSize, sizeStr)
 	}
 
 	var num, sfx string
@@ -121,7 +127,7 @@ func parseSize(sizeStr string, uMap unitMap) (int64, error) {
 	}
 	// Backward compatibility: reject negative sizes.
 	if size < 0 {
-		return -1, fmt.Errorf("invalid size: '%s'", sizeStr)
+		return -1, fmt.Errorf("%w: '%s'", ErrInvalidSize, sizeStr)
 	}
 
 	if len(sfx) == 0 {
@@ -161,5 +167,5 @@ func parseSize(sizeStr string, uMap unitMap) (int64, error) {
 	return int64(size), nil
 
 badSuffix:
-	return -1, fmt.Errorf("invalid suffix: '%s'", sfx)
+	return -1, fmt.Errorf("%w: '%s'", ErrInvalidSuffix, sfx)
 }
