@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-// Inheriting CoreConfig gives default implementation
+// Inheriting CoreConfig gives default implementation.
 type IConfiguration interface {
 	/*
 		// Resolve returns a resolved path relative to the config file location
