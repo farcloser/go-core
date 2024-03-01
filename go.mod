@@ -7,6 +7,7 @@ go 1.21
 require (
 	github.com/getsentry/sentry-go v0.26.0
 	github.com/getsentry/sentry-go/otel v0.26.0
+	github.com/google/uuid v1.4.0
 	github.com/rs/zerolog v1.32.0
 	go.opentelemetry.io/otel v1.22.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.22.0

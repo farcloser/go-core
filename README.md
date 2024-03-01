@@ -38,4 +38,3 @@ do not leak into your API.
 
 * consider going with https://github.com/go-logr/zerologr (eg: github.com/go-logr/logr)
 if they really have traction - or slog alternatively
-* 
