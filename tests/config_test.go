@@ -19,6 +19,8 @@ import (
 const prefix = ".tmp-"
 
 func TestConfigLoadTargetDoesNotExist(t *testing.T) {
+	t.Parallel()
+
 	dir, _ := os.UserHomeDir()
 	conf := config.New(dir, "does", "not", "exist")
 	err := loader.Load(conf)
@@ -29,6 +31,8 @@ func TestConfigLoadTargetDoesNotExist(t *testing.T) {
 }
 
 func TestConfigLoadTargetIsADirectory(t *testing.T) {
+	t.Parallel()
+
 	dir, _ := os.UserHomeDir()
 	conf := config.New(dir, ".")
 	err := loader.Load(conf)
@@ -41,6 +45,8 @@ func TestConfigLoadTargetIsADirectory(t *testing.T) {
 }
 
 func TestConfigLoadTargetUnreadable(t *testing.T) {
+	t.Parallel()
+
 	dir, _ := os.UserHomeDir()
 	filename := path.Join(dir, "testunreadablefile")
 
@@ -76,6 +82,8 @@ func TestConfigLoadTargetUnreadable(t *testing.T) {
 }
 
 func TestConfigLoadIsNotJSON(t *testing.T) {
+	t.Parallel()
+
 	dir, _ := os.UserHomeDir()
 	filename := path.Join(dir, "testnotjson")
 
@@ -108,6 +116,8 @@ func TestConfigLoadIsNotJSON(t *testing.T) {
 }
 
 func TestConfigLoadWrongType(t *testing.T) {
+	t.Parallel()
+
 	dir, _ := os.UserHomeDir()
 	filename := path.Join(dir, "wrongtype")
 
@@ -145,6 +155,8 @@ func TestConfigLoadWrongType(t *testing.T) {
 }
 
 func TestConfigResolve(t *testing.T) {
+	t.Parallel()
+
 	conf := config.New("/somewhere", "thing.foo")
 	l := conf.Resolve("/", "perdita")
 	t.Fatalf("should have returned shit: %s", l)

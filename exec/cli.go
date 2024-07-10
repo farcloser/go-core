@@ -37,8 +37,8 @@ func New(defaultBin string, envBin string) *Commander {
 	// XXX this is ill-designed
 	if !filepath.IsAbs(bin) {
 		var err error
-		execut, err = os.Executable()
 
+		execut, err = os.Executable()
 		if err != nil {
 			reporter.CaptureException(fmt.Errorf("failed retrieving current binary information: %w", err))
 			log.Fatal().Err(err).Msg("Cannot find current binary location. This is very wrong.")

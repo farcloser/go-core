@@ -2,25 +2,15 @@ linters:
   disable-all: false
   enable-all: true
   disable:
-    # Deprecated or auto disabled for lack of generics support
-    - deadcode
-    - scopelint
-    - exhaustivestruct
-    - maligned
-    - interfacer
-    - varcheck
-    - golint
-    - ifshort
-    - structcheck
-    - nosnakecase
+    # 2024-07 v0.59 - gomnd is reported deprecated / renamed
+    # Deprecated
+    - execinquery
 
     # Too annoying
     - exhaustruct # this is fine without, usually
     - funlen # somewhat ridiculous
     - cyclop # who cares! :D
     - godox # just leave it alone
-    # Not now
-    - paralleltest
     # TODO(apostasie) Temporary out until we wrap up all of them
     - wrapcheck
 
@@ -38,6 +28,7 @@ linters-settings:
           - $gostd
           - github.com/rs/zerolog
           - github.com/getsentry/sentry-go
+          - github.com/google/uuid
         deny:
           - pkg: "github.com/sirupsen/logrus"
             desc: we use Zerolog

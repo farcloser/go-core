@@ -1,8 +1,9 @@
 package network
 
 import (
-	"go.farcloser.world/core/log"
 	"net"
+
+	"go.farcloser.world/core/log"
 )
 
 /*
@@ -14,8 +15,10 @@ import (
 	FlagRunning                        // interface is in running state
 */
 
-type Interface = net.Interface
-type Address = net.Addr
+type (
+	Interface = net.Interface
+	Address   = net.Addr
+)
 
 type Interfaces struct {
 	iFaceList []Interface
@@ -26,16 +29,19 @@ func (obj *Interfaces) refresh() error {
 	if err != nil {
 		return err
 	}
+
 	obj.iFaceList = list
+
 	return nil
 }
 
-// XXX no error management here
+// XXX no error management here.
 func (obj *Interfaces) GetAddresses(onlyIPv4 bool, onlyName string) []Address {
-	obj.refresh()
+	_ = obj.refresh()
 
 	var addresses []net.Addr
-	var interfaces []net.Interface
+
+	// var interfaces []net.Interface
 
 	for _, iface := range obj.iFaceList {
 		// If we want a specific name, stick to that
@@ -78,8 +84,8 @@ func (obj *Interfaces) GetAddresses(onlyIPv4 bool, onlyName string) []Address {
 					Str("addr", addr.(*net.IPNet).String()). //nolint:forcetypeassert
 					Msg("Found eligible interface")
 
+				// interfaces = append(interfaces, iface)
 				addresses = append(addresses, addr)
-				interfaces = append(interfaces, iface)
 			}
 		}
 	}
