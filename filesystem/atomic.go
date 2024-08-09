@@ -2,6 +2,7 @@ package filesystem
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
@@ -34,38 +35,41 @@ func WriteFile(filename string, data []byte, perm os.FileMode) error {
 
 	tmpFile, err := os.CreateTemp(filepath.Dir(filename), ".tmp-"+filepath.Base(filename))
 	if err != nil {
-		return err
+		return errors.Join(ErrAtomicWriteFail, err)
 	}
 
-	err = os.Chmod(tmpFile.Name(), perm)
-	if err != nil {
+	if err = os.Chmod(tmpFile.Name(), perm); err != nil {
 		tmpFile.Close()
 
-		return err
+		return errors.Join(ErrAtomicWriteFail, err)
 	}
 
 	n, err := io.Copy(tmpFile, reader)
 	if err == nil && n < dataSize {
 		tmpFile.Close()
 
-		return io.ErrShortWrite
+		return errors.Join(ErrAtomicWriteFail, io.ErrShortWrite)
 	}
 
 	if err != nil {
 		tmpFile.Close()
 
-		return err
+		return errors.Join(ErrAtomicWriteFail, err)
 	}
 
-	if err := tmpFile.Sync(); err != nil {
+	if err = tmpFile.Sync(); err != nil {
 		tmpFile.Close()
 
-		return err
+		return errors.Join(ErrAtomicWriteFail, err)
 	}
 
-	if err := tmpFile.Close(); err != nil {
-		return err
+	if err = tmpFile.Close(); err != nil {
+		return errors.Join(ErrAtomicWriteFail, err)
 	}
 
-	return os.Rename(tmpFile.Name(), filename)
+	if err = os.Rename(tmpFile.Name(), filename); err != nil {
+		return errors.Join(ErrAtomicWriteFail, err)
+	}
+
+	return nil
 }

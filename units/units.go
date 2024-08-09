@@ -3,7 +3,6 @@
 package units
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -31,11 +30,6 @@ const (
 	precision     = 4
 	base          = 1024.0
 	decimalBase   = 1000
-)
-
-var (
-	ErrInvalidSize   = errors.New("invalid size")
-	ErrInvalidSuffix = errors.New("invalid suffix")
 )
 
 type unitMap map[byte]int64
