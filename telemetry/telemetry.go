@@ -3,7 +3,7 @@ package telemetry
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"io"
 	"time"
 
@@ -76,7 +76,7 @@ func provider(expType ExporterType, url string, serviceName string) (*sdktrace.T
 	}
 
 	switch expType {
-	case JAEGGER:
+	case JAEGER:
 		ctx := context.Background()
 
 		exp, err = otlptracehttp.New(
@@ -102,7 +102,7 @@ func provider(expType ExporterType, url string, serviceName string) (*sdktrace.T
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to create provider: %w", err)
+		return nil, errors.Join(ErrProviderCreationFailed, err)
 	}
 
 	tracerProvider := sdktrace.NewTracerProvider(

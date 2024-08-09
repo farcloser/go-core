@@ -1,6 +1,7 @@
 package network
 
 import (
+	"errors"
 	"net"
 
 	"go.farcloser.world/core/log"
@@ -21,33 +22,22 @@ type (
 )
 
 type Interfaces struct {
-	iFaceList []Interface
 }
 
-func (obj *Interfaces) refresh() error {
+func (obj *Interfaces) GetAddresses(onlyIPv4 bool, onlyName string) ([]Address, error) {
 	list, err := net.Interfaces()
 	if err != nil {
-		return err
+		return nil, errors.Join(ErrInterfacesRetrievalFailed, err)
 	}
-
-	obj.iFaceList = list
-
-	return nil
-}
-
-// XXX no error management here.
-func (obj *Interfaces) GetAddresses(onlyIPv4 bool, onlyName string) []Address {
-	_ = obj.refresh()
 
 	var addresses []net.Addr
 
-	// var interfaces []net.Interface
-
-	for _, iface := range obj.iFaceList {
-		// If we want a specific name, stick to that
+	for _, iface := range list {
+		// If we want a specific name, make sure we have that
 		if onlyName != "" && onlyName != iface.Name {
 			continue
 		}
+
 		// Ignore interfaces that are down
 		if (iface.Flags & net.FlagUp) == 0 {
 			continue
@@ -72,23 +62,22 @@ func (obj *Interfaces) GetAddresses(onlyIPv4 bool, onlyName string) []Address {
 			continue
 		}
 
-		addrs, err := iface.Addrs()
+		var addrs []Address
+		addrs, err = iface.Addrs()
 		if err != nil {
-			// xxx handle
-			panic(err)
+			continue
 		}
 
 		for _, addr := range addrs {
 			if !onlyIPv4 || addr.(*net.IPNet).IP.To4() != nil { //nolint:forcetypeassert
-				log.Warn().Str("iface name", iface.Name).
+				log.Info().Str("iface name", iface.Name).
 					Str("addr", addr.(*net.IPNet).String()). //nolint:forcetypeassert
 					Msg("Found eligible interface")
 
-				// interfaces = append(interfaces, iface)
 				addresses = append(addresses, addr)
 			}
 		}
 	}
 
-	return addresses
+	return addresses, nil
 }

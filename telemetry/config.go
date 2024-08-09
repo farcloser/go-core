@@ -6,11 +6,6 @@ package telemetry
 
 type ExporterType string
 
-const (
-	JAEGGER ExporterType = "jaegger"
-	SENTRY  ExporterType = "sentry"
-)
-
 type Config struct {
 	ServiceName string       `json:"serviceName"`
 	Disabled    bool         `json:"disabled"`

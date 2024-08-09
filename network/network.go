@@ -25,16 +25,6 @@ func (network *Network) TLSConfig() *tls.Config {
 			log.Error().Msg("Invalid client CA in your config... Not loaded.")
 		}
 	}
-	/*
-		if serverConfig.ClientCA != nil {
-			for _, v := range serverConfig.ClientCA {
-				ok := ClientCA.AppendCertsFromPEM([]byte(v))
-				if !ok {
-					log.Error().Msg("Invalid client CA in your config... Not loaded.")
-				}
-			}
-		}
-	*/
 
 	tlsMin := network.serverConfig.TLSMin
 	if tlsMin < tls.VersionTLS12 {

@@ -39,7 +39,7 @@ func Exist(obj IConfiguration) bool {
 func Load(obj IConfiguration) error {
 	err := read(obj, obj.GetLocation()...)
 	if err != nil {
-		return err
+		return errors.Join(ErrConfigLoadFail, err)
 	}
 
 	obj.OnIO()
@@ -50,9 +50,19 @@ func Load(obj IConfiguration) error {
 func Save(obj IConfiguration) error {
 	obj.OnIO()
 
-	return write(obj, obj.GetLocation()...)
+	err := write(obj, obj.GetLocation()...)
+	if err != nil {
+		err = errors.Join(ErrConfigSaveFail, err)
+	}
+
+	return err
 }
 
 func Remove(obj IConfiguration) error {
-	return remove(obj.GetLocation()...)
+	err := remove(obj.GetLocation()...)
+	if err != nil {
+		err = errors.Join(ErrConfigRemoveFail, err)
+	}
+
+	return err
 }

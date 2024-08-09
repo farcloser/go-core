@@ -2,7 +2,6 @@ package loader
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"path"
 	"path/filepath"
@@ -36,7 +35,7 @@ func read(cfg interface{}, location ...string) error {
 
 	data, err := os.ReadFile(loc)
 	if err != nil {
-		return fmt.Errorf("failed reading config file %w", err)
+		return err
 	}
 
 	return json.Unmarshal(data, &cfg)
@@ -54,12 +53,12 @@ func write(cfg interface{}, location ...string) error {
 
 	err := os.MkdirAll(path.Dir(loc), filesystem.DirPermissionsDefault)
 	if err != nil {
-		return fmt.Errorf("failed creating config parent directory %w", err)
+		return err
 	}
 
 	data, err := json.MarshalIndent(&cfg, "", " ")
 	if err != nil {
-		return fmt.Errorf("failed marshalling config json %w", err)
+		return err
 	}
 
 	return filesystem.WriteFile(loc, data, filesystem.FilePermissionsDefault)

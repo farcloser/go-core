@@ -1,6 +1,7 @@
 package network
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -26,7 +27,7 @@ func (adt *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 
 	resp, err := adt.Transport.RoundTrip(req)
 	if err != nil {
-		err = fmt.Errorf("RoundTrip error: %w", err)
+		err = errors.Join(ErrRoundTrip, err)
 	}
 
 	return resp, err
