@@ -2,6 +2,7 @@ package exec
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -14,53 +15,55 @@ import (
 	"go.farcloser.world/core/reporter"
 )
 
-func Resolve(bin string) (string, error) {
-	o, err := exec.Command("which", bin).Output()
+// FIXME: rewrite this whole stuff
+
+var ErrExecResolutionFail = errors.New("resolve errored")
+
+func Resolve(binaryName string) (string, error) {
+	// https://unix.stackexchange.com/questions/85249/why-not-use-which-what-to-use-then
+	o, err := exec.Command("command", "-v", binaryName).Output()
 	if err != nil {
-		return "", fmt.Errorf("resolve errored with: %w", err)
+		return "", errors.Join(ErrExecResolutionFail, err)
 	}
 
-	out := string(o)
-	out = strings.Trim(out, "\n")
-
-	return out, nil
+	return strings.Trim(string(o), "\n"), nil
 }
 
-func New(defaultBin string, envBin string) *Commander {
-	// This is only useful for test...
-	bin := os.Getenv(envBin)
-	if bin == "" {
-		bin = defaultBin
+func New(defaultBinaryLocation string, environVariable string) *Commander {
+	// This is only useful for integration testing, really...
+	binaryLocation := os.Getenv(environVariable)
+	if binaryLocation == "" {
+		binaryLocation = defaultBinaryLocation
 	}
 
-	execut := bin
+	resolvedLocation := binaryLocation
 	// XXX this is ill-designed
-	if !filepath.IsAbs(bin) {
+	if !filepath.IsAbs(binaryLocation) {
 		var err error
 
-		execut, err = os.Executable()
+		resolvedLocation, err = os.Executable()
 		if err != nil {
 			reporter.CaptureException(fmt.Errorf("failed retrieving current binary information: %w", err))
 			log.Fatal().Err(err).Msg("Cannot find current binary location. This is very wrong.")
 		}
 
-		execut = filepath.Join(filepath.Dir(execut), bin)
+		resolvedLocation = filepath.Join(filepath.Dir(resolvedLocation), binaryLocation)
 
-		if _, err := os.Stat(execut); err != nil {
+		if _, err = os.Stat(resolvedLocation); err != nil {
 			// Fallback to path resolution
-			execut, _ = Resolve(bin)
+			resolvedLocation, _ = Resolve(binaryLocation)
 		}
 	}
 
-	if _, err := os.Stat(execut); err != nil {
+	if _, err := os.Stat(resolvedLocation); err != nil {
 		w, _ := os.Getwd()
-		reporter.CaptureException(fmt.Errorf("failed finding cli %s with pwd %s - err: %w", bin, w, err))
-		log.Fatal().Str("pwd", w).Msgf("Failed finding cli %s with pwd %s - err: %s", bin, w, err)
+		reporter.CaptureException(fmt.Errorf("failed finding cli %s with pwd %s - err: %w", binaryLocation, w, err))
+		log.Fatal().Str("pwd", w).Msgf("Failed finding cli %s with pwd %s - err: %s", binaryLocation, w, err)
 	}
 
 	return &Commander{
 		mu:  &sync.Mutex{},
-		bin: execut,
+		bin: resolvedLocation,
 	}
 }
 

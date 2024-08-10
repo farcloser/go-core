@@ -8,6 +8,7 @@ require (
 	github.com/getsentry/sentry-go v0.28.1
 	github.com/getsentry/sentry-go/otel v0.28.1
 	github.com/google/uuid v1.6.0
+	github.com/peterbourgon/diskv/v3 v3.0.1
 	github.com/rs/zerolog v1.33.0
 	go.opentelemetry.io/otel v1.28.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.28.0
@@ -19,6 +20,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/google/btree v1.1.2 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.21.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

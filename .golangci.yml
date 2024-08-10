@@ -1,8 +1,23 @@
+run:
+  # If it is explicitly set to 0 (i.e. not the default) then golangci-lint will automatically set the value to match Linux container CPU quota.
+  concurrency: 0
+  timeout: 5m
+  issues-exit-code: 2
+  tests: true
+  #build-tags:
+  #  - mytag
+  modules-download-mode: readonly
+  allow-parallel-runners: true
+  allow-serial-runners: true
+  # FIXME @apostasie: it does not seem to read go.mod... so, for now, duplicating here
+  go: '1.22'
+
 linters:
   disable-all: false
   enable-all: true
   disable:
-    # 2024-07 v0.59 - gomnd is reported deprecated / renamed
+    # gomnd => mnd
+    - gomnd
     # Deprecated
     - execinquery
 
@@ -29,6 +44,7 @@ linters-settings:
           - github.com/rs/zerolog
           - github.com/getsentry/sentry-go
           - github.com/google/uuid
+          - github.com/peterbourgon/diskv/v3
         deny:
           - pkg: "github.com/sirupsen/logrus"
             desc: we use Zerolog

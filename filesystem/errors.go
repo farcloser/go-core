@@ -6,4 +6,5 @@ var (
 	ErrLockFail        = errors.New("failed to acquire lock")
 	ErrUnlockFail      = errors.New("failed to release lock")
 	ErrAtomicWriteFail = errors.New("failed to write file atomically")
+	ErrLockIsNil       = errors.New("nil lock")
 )

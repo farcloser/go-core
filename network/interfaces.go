@@ -21,8 +21,7 @@ type (
 	Address   = net.Addr
 )
 
-type Interfaces struct {
-}
+type Interfaces struct{}
 
 func (obj *Interfaces) GetAddresses(onlyIPv4 bool, onlyName string) ([]Address, error) {
 	list, err := net.Interfaces()
@@ -63,6 +62,7 @@ func (obj *Interfaces) GetAddresses(onlyIPv4 bool, onlyName string) ([]Address, 
 		}
 
 		var addrs []Address
+
 		addrs, err = iface.Addrs()
 		if err != nil {
 			continue
