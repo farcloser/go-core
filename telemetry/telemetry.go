@@ -1,4 +1,3 @@
-//nolint:ireturn
 package telemetry
 
 import (
@@ -8,14 +7,15 @@ import (
 	"time"
 
 	sentryotel "github.com/getsentry/sentry-go/otel"
-	"go.farcloser.world/core/log"
-	"go.farcloser.world/core/network"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"go.opentelemetry.io/otel/trace"
+
+	"go.farcloser.world/core/log"
+	"go.farcloser.world/core/network"
 )
 
 const closeTimeout = 5 * time.Second
@@ -39,20 +39,21 @@ func (t providerCloser) Close() error {
 	return t.Shutdown(ctx)
 }
 
+//nolint:ireturn
 func GetTracerProvider() TracerProvider {
 	return otel.GetTracerProvider()
 }
 
-func Init(conf *Config) io.Closer {
+func Init(conf *Config) (io.Closer, error) {
 	if conf.Disabled {
 		log.Warn().Msg("Telemetry is disabled.")
 
-		return &noopCloser{}
+		return &noopCloser{}, nil
 	}
 
 	prov, err := provider(conf.Type, conf.Endpoint, conf.ServiceName)
 	if err != nil {
-		log.Fatal().Err(err).Str("type", string(conf.Type)).Msg("Failed creating telemetry provider")
+		return nil, err
 	}
 
 	// Register with OTEL
@@ -60,7 +61,7 @@ func Init(conf *Config) io.Closer {
 
 	return providerCloser{
 		TracerProvider: prov,
-	}
+	}, nil
 }
 
 func provider(expType ExporterType, url string, serviceName string) (*sdktrace.TracerProvider, error) {

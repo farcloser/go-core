@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/peterbourgon/diskv/v3"
+
 	"go.farcloser.world/core/filesystem"
 )
 
@@ -68,19 +69,21 @@ type Store struct {
 	lock  *os.File
 }
 
-func (st *Store) Read(name string) ([]byte, error) {
+func (st *Store) Read(name string) (content []byte, err error) {
 	if st.lock == nil {
-		err := st.ReadOnlyLock()
+		err = st.ReadOnlyLock()
 		if err != nil {
 			return nil, err
 		}
 
 		defer func() {
-			_ = st.Unlock()
+			if unlockErr := st.Unlock(); unlockErr != nil {
+				err = errors.Join(err, unlockErr)
+			}
 		}()
 	}
 
-	content, err := st.diskv.Read(hash(name))
+	content, err = st.diskv.Read(hash(name))
 	if err != nil {
 		err = errors.Join(ErrFileStoreFail, err)
 	}
@@ -88,19 +91,21 @@ func (st *Store) Read(name string) ([]byte, error) {
 	return content, err
 }
 
-func (st *Store) ReadFromKey(key string) ([]byte, error) {
+func (st *Store) ReadFromKey(key string) (content []byte, err error) {
 	if st.lock == nil {
-		err := st.ReadOnlyLock()
+		err = st.ReadOnlyLock()
 		if err != nil {
 			return nil, err
 		}
 
 		defer func() {
-			_ = st.Unlock()
+			if unlockErr := st.Unlock(); unlockErr != nil {
+				err = errors.Join(err, unlockErr)
+			}
 		}()
 	}
 
-	content, err := st.diskv.Read(key)
+	content, err = st.diskv.Read(key)
 	if err != nil {
 		err = errors.Join(ErrFileStoreFail, err)
 	}
@@ -108,15 +113,17 @@ func (st *Store) ReadFromKey(key string) ([]byte, error) {
 	return content, err
 }
 
-func (st *Store) Has(name string) (bool, error) {
+func (st *Store) Has(name string) (has bool, err error) {
 	if st.lock == nil {
-		err := st.ReadOnlyLock()
+		err = st.ReadOnlyLock()
 		if err != nil {
 			return false, err
 		}
 
 		defer func() {
-			_ = st.Unlock()
+			if unlockErr := st.Unlock(); unlockErr != nil {
+				err = errors.Join(err, unlockErr)
+			}
 		}()
 	}
 
@@ -131,19 +138,21 @@ func (st *Store) Digest(name string) string {
 	return hash(name)
 }
 
-func (st *Store) Write(name string, value []byte) error {
+func (st *Store) Write(name string, value []byte) (err error) {
 	if st.lock == nil {
-		err := st.WriteLock()
+		err = st.WriteLock()
 		if err != nil {
 			return err
 		}
 
 		defer func() {
-			_ = st.Unlock()
+			if unlockErr := st.Unlock(); unlockErr != nil {
+				err = errors.Join(err, unlockErr)
+			}
 		}()
 	}
 
-	err := st.diskv.Write(hash(name), value)
+	err = st.diskv.Write(hash(name), value)
 	if err != nil {
 		err = errors.Join(ErrFileStoreFail, err)
 	}
@@ -151,19 +160,21 @@ func (st *Store) Write(name string, value []byte) error {
 	return err
 }
 
-func (st *Store) Delete(name string) error {
+func (st *Store) Delete(name string) (err error) {
 	if st.lock == nil {
-		err := st.WriteLock()
+		err = st.WriteLock()
 		if err != nil {
 			return err
 		}
 
 		defer func() {
-			_ = st.Unlock()
+			if unlockErr := st.Unlock(); unlockErr != nil {
+				err = errors.Join(err, unlockErr)
+			}
 		}()
 	}
 
-	err := st.diskv.Erase(hash(name))
+	err = st.diskv.Erase(hash(name))
 	if err != nil {
 		err = errors.Join(ErrFileStoreFail, err)
 	}
@@ -171,19 +182,23 @@ func (st *Store) Delete(name string) error {
 	return err
 }
 
-func (st *Store) Rename(oldName, newName string) error {
+func (st *Store) Rename(oldName, newName string) (err error) {
 	if st.lock == nil {
-		err := st.WriteLock()
+		err = st.WriteLock()
 		if err != nil {
 			return err
 		}
 
 		defer func() {
-			_ = st.Unlock()
+			if unlockErr := st.Unlock(); unlockErr != nil {
+				err = errors.Join(err, unlockErr)
+			}
 		}()
 	}
 
-	content, err := st.Read(oldName)
+	var content []byte
+
+	content, err = st.Read(oldName)
 	if err != nil {
 		return err
 	}
@@ -197,35 +212,54 @@ func (st *Store) Rename(oldName, newName string) error {
 }
 
 // Lock by default gets an exclusive read/write lock.
-func (st *Store) Lock() error {
+func (st *Store) Lock() (err error) {
 	return st.WriteLock()
 }
 
-func (st *Store) WriteLock() error {
-	var err error
-	st.lock, err = filesystem.Lock(st.diskv.BasePath)
+func (st *Store) WriteLock() (err error) {
+	err = os.MkdirAll(st.diskv.BasePath, filesystem.DirPermissionsPrivate)
+	if err != nil {
+		return err
+	}
+
+	lock, err := filesystem.Lock(st.diskv.BasePath)
 	if err != nil {
 		err = errors.Join(ErrFileStoreFail, err)
+	} else {
+		st.lock = lock
 	}
 
 	return err
 }
 
-func (st *Store) ReadOnlyLock() error {
-	var err error
+func (st *Store) ReadOnlyLock() (err error) {
+	err = os.MkdirAll(st.diskv.BasePath, filesystem.DirPermissionsPrivate)
+	if err != nil {
+		return err
+	}
 
-	st.lock, err = filesystem.ReadOnlyLock(st.diskv.BasePath)
+	lock, err := filesystem.ReadOnlyLock(st.diskv.BasePath)
 	if err != nil {
 		err = errors.Join(ErrFileStoreFail, err)
+	} else {
+		st.lock = lock
 	}
 
 	return err
 }
 
-func (st *Store) Unlock() error {
-	err := filesystem.Unlock(st.lock)
+func (st *Store) Unlock() (err error) {
+	defer func() {
+		if err != nil {
+			err = errors.Join(ErrFileStoreFail, err)
+		}
+	}()
+
+	err = filesystem.Unlock(st.lock)
 	if err != nil {
 		err = errors.Join(ErrFileStoreFail, err)
+	} else {
+		st.lock = nil
 	}
 
 	return err

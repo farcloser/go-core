@@ -4,6 +4,12 @@ lint:
 lint-fix:
 	golangci-lint run --fix
 
+lint-imports:
+	./make-lint-imports.sh
+
+lint-imports-fix:
+	goimports-reviser -company-prefixes "go.farcloser.world" ./...
+
 tidy:
 	go mod tidy
 

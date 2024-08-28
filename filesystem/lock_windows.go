@@ -9,10 +9,9 @@
 package filesystem
 
 import (
+	"errors"
 	"os"
 	"syscall"
-
-	"go.farcloser.world/core/log"
 )
 
 type lockType uint32
@@ -28,27 +27,29 @@ const (
 	allBytes = ^uint32(0)
 )
 
-func lock(path string, lockType lockType) (*os.File, error) {
-	file, err := os.OpenFile(path+".lock", os.O_CREATE, 0644)
+func lock(path string, lockType lockType) (file *os.File, err error) {
+	file, err = os.OpenFile(path+".lock", os.O_CREATE, 0644)
 	if err != nil {
 		return nil, err
 	}
+
 	if err = syscall.LockFileEx(syscall.Handle(f.Fd()), uint32(lockType), reserved, allBytes, allBytes, new(syscall.Overlapped)); err != nil {
 		if fileErr := file.Close(); fileErr != nil {
-			log.Error().Err(fileErr).Msgf("failed closing lock file %q", file.Name())
+			err = errors.Join(err, fileErr)
 		}
+
 		return nil, err
 	}
 
-	return file, err
+	return file, nil
 }
 
-func unlock(locked File) error {
+func unlock(locked File) (err error) {
 	defer func() {
-		err := locked.Close()
-		if err != nil {
-			log.Error().Err(err).Msgf("failed closing lock file %q", locked.Name())
+		if closeErr = locked.Close(); closeErr != nil {
+			err = errors.Join(err, closeErr)
 		}
 	}()
+
 	return syscall.UnlockFileEx(syscall.Handle(f.Fd()), reserved, allBytes, allBytes, new(syscall.Overlapped))
 }

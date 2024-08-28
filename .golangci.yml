@@ -20,6 +20,8 @@ linters:
     - gomnd
     # Deprecated
     - execinquery
+    # I like namedreturns occasionally
+    - nonamedreturns
 
     # Too annoying
     - exhaustruct # this is fine without, usually
@@ -28,6 +30,9 @@ linters:
     - godox # just leave it alone
     # TODO(apostasie) Temporary out until we wrap up all of them
     - wrapcheck
+
+    # We us go-imports instead
+    - gci
 
 linters-settings:
   staticcheck:

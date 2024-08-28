@@ -12,8 +12,6 @@ import (
 	"errors"
 	"os"
 	"syscall"
-
-	"go.farcloser.world/core/log"
 )
 
 type lockType int16
@@ -38,7 +36,7 @@ func lock(path string, lockType lockType) (*os.File, error) {
 
 	if err != nil {
 		if fileErr := file.Close(); fileErr != nil {
-			log.Error().Err(fileErr).Msgf("failed closing lock file %q", file.Name())
+			err = errors.Join(err, fileErr)
 		}
 
 		return nil, err
@@ -47,16 +45,15 @@ func lock(path string, lockType lockType) (*os.File, error) {
 	return file, nil
 }
 
-func unlock(file *os.File) error {
+func unlock(file *os.File) (err error) {
 	defer func() {
-		err := file.Close()
-		if err != nil {
-			log.Error().Err(err).Msgf("failed closing lock file %q", file.Name())
+		if closeErr := file.Close(); closeErr != nil {
+			err = errors.Join(err, closeErr)
 		}
 	}()
 
 	for {
-		err := syscall.Flock(int(file.Fd()), syscall.LOCK_UN)
+		err = syscall.Flock(int(file.Fd()), syscall.LOCK_UN)
 		if !errors.Is(err, syscall.EINTR) {
 			return err
 		}

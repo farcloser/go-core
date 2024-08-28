@@ -1,19 +1,21 @@
 package reporter
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/getsentry/sentry-go"
+
 	"go.farcloser.world/core/log"
 	"go.farcloser.world/core/network"
 )
 
 // Init should be called when the app starts, from a config object.
-func Init(conf *Config) {
+func Init(conf *Config) error {
 	if conf.Disabled {
 		log.Warn().Msg("Crash reporting is entirely disabled. This is not recommended.")
 
-		return
+		return nil
 	}
 
 	log.Debug().Msg("Initializing crash reporter with config")
@@ -36,8 +38,10 @@ func Init(conf *Config) {
 		TracesSampleRate: 1.0,
 	})
 	if err != nil {
-		log.Fatal().Err(err).Msg("sentry.Init failed")
+		return errors.Join(ErrReporterInitFailed, err)
 	}
+
+	return nil
 }
 
 func CaptureException(err error) *EventID {
