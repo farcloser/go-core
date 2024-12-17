@@ -2,6 +2,6 @@
 
 package filesystem
 
-func umask(mask int) int {
+func umask(_ int) int {
 	return 0
 }
