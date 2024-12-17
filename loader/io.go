@@ -10,7 +10,7 @@ import (
 	"go.farcloser.world/core/filesystem"
 )
 
-var mut *sync.Mutex //nolint:gochecknoglobals
+var mut sync.Mutex //nolint:gochecknoglobals
 
 func absolute(location ...string) string {
 	loc := path.Join(location...)
@@ -26,10 +26,6 @@ func absolute(location ...string) string {
 func read(cfg interface{}, location ...string) error {
 	loc := absolute(location...)
 
-	if mut == nil {
-		mut = &sync.Mutex{}
-	}
-
 	mut.Lock()
 	defer mut.Unlock()
 
@@ -43,10 +39,6 @@ func read(cfg interface{}, location ...string) error {
 
 func write(cfg interface{}, location ...string) error {
 	loc := absolute(location...)
-
-	if mut == nil {
-		mut = &sync.Mutex{}
-	}
 
 	mut.Lock()
 	defer mut.Unlock()
@@ -66,10 +58,6 @@ func write(cfg interface{}, location ...string) error {
 
 func remove(location ...string) error {
 	loc := absolute(location...)
-
-	if mut == nil {
-		mut = &sync.Mutex{}
-	}
 
 	mut.Lock()
 	defer mut.Unlock()

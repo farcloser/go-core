@@ -117,7 +117,7 @@ func parseSize(sizeStr string, uMap unitMap) (int64, error) {
 
 	size, err := strconv.ParseFloat(num, 64)
 	if err != nil {
-		return -1, err
+		return -1, fmt.Errorf("%w: '%w'", ErrInvalidSize, err)
 	}
 	// Backward compatibility: reject negative sizes.
 	if size < 0 {
