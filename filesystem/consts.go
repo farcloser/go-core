@@ -7,4 +7,6 @@ const (
 	DirPermissionsPrivate  = 0o700
 
 	defaultUmask uint32 = 0o077
+
+	pathComponentMaxLength = 255
 )

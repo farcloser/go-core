@@ -3,7 +3,7 @@ package filesystem
 import "math"
 
 func Init() {
-	// Retrieve the current umask so we can restore it on exit
+	// Retrieve the current umask as a starting point
 	cMask := umask(0)
 
 	if cMask > math.MaxUint32 || cMask < 0 {

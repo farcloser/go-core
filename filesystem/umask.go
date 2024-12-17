@@ -8,7 +8,7 @@ func SetUmask(mask uint32) {
 	}
 
 	currentMask = mask
-	umask(int(mask)) //nolint:staticcheck
+	_ = umask(int(mask))
 }
 
 func GetUmask() uint32 {
