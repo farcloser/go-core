@@ -1,3 +1,5 @@
+//go:build !race
+
 package filesystem_test
 
 import (
@@ -9,6 +11,10 @@ import (
 
 	"go.farcloser.world/core/filesystem"
 )
+
+// Note: these tests are NOT racy - the entire point here is to prove that the filesystem lock is effectively protecting
+// against these conditions.
+// Maybe the test could be rewritten to use different variables instead so we can use race on it.
 
 const (
 	mainroutine1 = "mainroutine1"

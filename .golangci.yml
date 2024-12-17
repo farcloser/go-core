@@ -1,10 +1,11 @@
+---
 run:
   # If it is explicitly set to 0 (i.e. not the default) then golangci-lint will automatically set the value to match Linux container CPU quota.
   concurrency: 0
   timeout: 5m
   issues-exit-code: 2
   tests: true
-  #build-tags:
+  # build-tags:
   #  - mytag
   modules-download-mode: readonly
   allow-parallel-runners: true
@@ -21,10 +22,10 @@ linters:
     # Deprecated
     - exportloopref
     # Too annoying
-    - exhaustruct # this is fine without, usually
-    - funlen # somewhat ridiculous
-    - cyclop # who cares! :D
-    - godox # just leave it alone
+    - exhaustruct  # this is fine without, usually
+    - funlen  # somewhat ridiculous
+    - cyclop  # who cares! :D
+    - godox  # just leave it alone
     # TODO(apostasie) Temporary out until we wrap up all of them
     - wrapcheck
 

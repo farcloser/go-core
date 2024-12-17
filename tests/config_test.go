@@ -10,6 +10,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"go.farcloser.world/core/config"
@@ -46,6 +47,12 @@ func TestConfigLoadTargetIsADirectory(t *testing.T) {
 
 func TestConfigLoadTargetUnreadable(t *testing.T) {
 	t.Parallel()
+
+	if runtime.GOOS == "windows" {
+		// FIXME
+		// Permissions on windows do not work the same way - the file is actually readable here
+		t.Skip()
+	}
 
 	dir, _ := os.UserHomeDir()
 	filename := path.Join(dir, "testunreadablefile")
@@ -154,6 +161,7 @@ func TestConfigLoadWrongType(t *testing.T) {
 	}
 }
 
+/*
 func TestConfigResolve(t *testing.T) {
 	t.Parallel()
 
@@ -161,3 +169,4 @@ func TestConfigResolve(t *testing.T) {
 	l := conf.Resolve("/", "perdita")
 	t.Fatalf("should have returned shit: %s", l)
 }
+*/

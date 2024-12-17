@@ -6,6 +6,8 @@ Provides basics to be used by all our go projects, specifically:
 - telemetry (based on otel)
 - network (to ease manipulation of global network settings, specifically related to TLS)
 - exec (to ease shelling out)
+- human-readable units and duration
+- filesystem safe operations primitives (locking, atomic writes)
 
 ## Dev
 
