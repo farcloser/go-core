@@ -55,3 +55,29 @@ func Unlock(lock *os.File) error {
 
 	return err
 }
+
+func WithLock(path string, function func() error) (err error) {
+	file, err := Lock(path)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		err = errors.Join(Unlock(file), err)
+	}()
+
+	return function()
+}
+
+func WithReadOnlyLock(path string, function func() error) (err error) {
+	file, err := ReadOnlyLock(path)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		err = errors.Join(Unlock(file), err)
+	}()
+
+	return function()
+}

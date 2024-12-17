@@ -16,13 +16,10 @@ linters:
   disable-all: false
   enable-all: true
   disable:
-    # gomnd => mnd
-    - gomnd
-    # Deprecated
-    - execinquery
     # I like namedreturns occasionally
     - nonamedreturns
-
+    # Deprecated
+    - exportloopref
     # Too annoying
     - exhaustruct # this is fine without, usually
     - funlen # somewhat ridiculous

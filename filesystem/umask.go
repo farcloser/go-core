@@ -2,15 +2,15 @@ package filesystem
 
 var currentMask = defaultUmask //nolint:gochecknoglobals
 
-func SetUmask(mask int) {
+func SetUmask(mask uint32) {
 	if mask == currentMask {
 		return
 	}
 
 	currentMask = mask
-	umask(mask)
+	umask(int(mask))
 }
 
-func GetUmask() int {
+func GetUmask() uint32 {
 	return currentMask
 }

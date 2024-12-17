@@ -6,5 +6,5 @@ const (
 	FilePermissionsPrivate = 0o600
 	DirPermissionsPrivate  = 0o700
 
-	defaultUmask = 0o077
+	defaultUmask uint32 = 0o077
 )

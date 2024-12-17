@@ -54,7 +54,7 @@ type Core struct {
 	Client    *network.Config   `json:"client,omitempty"`
 	Server    *network.Config   `json:"server,omitempty"`
 
-	Umask int `json:"umask,omitempty"`
+	Umask uint32 `json:"umask,omitempty"`
 
 	location []string
 }
