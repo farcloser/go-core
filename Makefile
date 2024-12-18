@@ -1,5 +1,10 @@
 # Variables
+COMPANY_PREFIXES := "go.farcloser.world"
+
 MAKEFILE_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
+VERSION ?= $(shell git -C $(MAKEFILE_DIR) describe --match 'v[0-9]*' --dirty='.m' --always --tags)
+VERSION_TRIMMED := $(VERSION:v%=%)
+REVISION ?= $(shell git -C $(MAKEFILE_DIR) rev-parse HEAD)$(shell if ! git -C $(MAKEFILE_DIR) diff --no-ext-diff --quiet --exit-code; then echo .m; fi)
 
 ifdef VERBOSE
 	VERBOSE_FLAG := -v
@@ -108,7 +113,7 @@ fix-go:
 fix-imports:
 	$(call title, $@)
 	@cd $(MAKEFILE_DIR) \
-		&& goimports-reviser -company-prefixes "go.farcloser.world" ./...
+		&& goimports-reviser -company-prefixes $(COMPANY_PREFIXES) ./...
 	$(call footer, $@)
 
 fix-mod:

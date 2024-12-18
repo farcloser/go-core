@@ -15,8 +15,8 @@ Provides basics to be used by all our go projects, specifically:
 
 ```bash
 make lint
-make lint-fix
-make tidy
+make test
+make fix
 ```
 
 ### Local documentation
