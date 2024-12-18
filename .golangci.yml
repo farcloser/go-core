@@ -48,10 +48,4 @@ linters-settings:
           - github.com/getsentry/sentry-go
           - github.com/google/uuid
           - github.com/peterbourgon/diskv/v3
-        deny:
-          - pkg: "github.com/sirupsen/logrus"
-            desc: we use Zerolog
-          - pkg: "github.com/bugsnag/bugsnag-go"
-            desc: we use Sentry
-          - pkg: "github.com/pkg/errors"
-            desc: Should be replaced by standard lib errors package
+          - github.com/mattn/go-isatty

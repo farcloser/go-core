@@ -122,7 +122,7 @@ fix-mod:
 		&& go mod tidy
 	$(call footer, $@)
 
-update:
+up:
 	$(call title, $@)
 	@cd $(MAKEFILE_DIR) \
 		&& go get -u ./...
