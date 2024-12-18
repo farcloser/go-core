@@ -9,6 +9,7 @@ require (
 	github.com/getsentry/sentry-go v0.30.0
 	github.com/getsentry/sentry-go/otel v0.30.0
 	github.com/google/uuid v1.6.0
+	github.com/klauspost/compress v1.17.7
 	github.com/mattn/go-isatty v0.0.20
 	github.com/peterbourgon/diskv/v3 v3.0.1
 	github.com/rs/zerolog v1.33.0
