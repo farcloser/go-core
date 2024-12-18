@@ -50,3 +50,4 @@ linters-settings:
           - github.com/peterbourgon/diskv/v3
           - github.com/mattn/go-isatty
           - github.com/Masterminds/semver/v3
+          - github.com/klauspost/compress
