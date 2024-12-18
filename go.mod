@@ -5,6 +5,7 @@ go 1.23.0
 // 	go.opentelemetry.io/otel/exporters/jaeger v1.17.0
 
 require (
+	github.com/Masterminds/semver/v3 v3.3.1
 	github.com/getsentry/sentry-go v0.30.0
 	github.com/getsentry/sentry-go/otel v0.30.0
 	github.com/google/uuid v1.6.0
