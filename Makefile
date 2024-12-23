@@ -39,7 +39,7 @@ endef
 lint: lint-go-all lint-imports lint-yaml lint-shell lint-commits lint-headers lint-mod lint-licenses-all
 test: test-unit race-unit bench-unit
 unit: test-unit race-unit bench-unit
-fix: fix-go fix-mod fix-imports
+fix: fix-mod fix-imports fix-go-all
 
 lint-go:
 	$(call title, $@)
@@ -108,6 +108,13 @@ fix-go:
 	$(call title, $@)
 	@cd $(MAKEFILE_DIR) \
 		&& golangci-lint run --fix
+	$(call footer, $@)
+
+fix-go-all:
+	$(call title, $@)
+	@cd $(MAKEFILE_DIR) \
+		&& GOOS=linux make fix-go \
+		&& GOOS=windows make fix-go
 	$(call footer, $@)
 
 fix-imports:
