@@ -160,16 +160,6 @@ install-linters:
 		&& go install github.com/incu6us/goimports-reviser/v3@f034195cc8a7ffc7cc70d60aa3a25500874eaf04
 	$(call footer, $@)
 
-install-base-linux:
-	$(call title, $@)
-	sudo apt-get install -qq --no-install-recommands golang make yamllint shellcheck
-	$(call footer, $@)
-
-install-base-brew:
-	$(call title, $@)
-	brew install golang make yamllint shellcheck
-	$(call footer, $@)
-
 test-unit:
 	$(call title, $@)
 	@go test $(VERBOSE_FLAG) -count 1 $(MAKEFILE_DIR)/...
