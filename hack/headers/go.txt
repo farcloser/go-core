@@ -13,12 +13,3 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-
-package reporter
-
-import "github.com/getsentry/sentry-go"
-
-type (
-	EventID = sentry.EventID
-	Event   = sentry.Event
-)

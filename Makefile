@@ -1,3 +1,17 @@
+#   Copyright Farcloser.
+
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+
+#       http://www.apache.org/licenses/LICENSE-2.0
+
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
 # Variables
 COMPANY_PREFIXES := "go.farcloser.world"
 
@@ -57,7 +71,7 @@ lint-go-all:
 lint-imports:
 	$(call title, $@)
 	@cd $(MAKEFILE_DIR) \
-		&& ./make-lint-imports.sh
+		&& ./hack/make-lint-imports.sh
 	$(call footer, $@)
 
 lint-yaml:
@@ -77,7 +91,8 @@ lint-commits:
 
 lint-headers:
 	$(call title, $@)
-	@cd $(MAKEFILE_DIR) && ltag -t "./hack/headers" --check $(VERBOSE_FLAG)
+	# Force verbose, as otherwise it is useless
+	@cd $(MAKEFILE_DIR) && ltag -t "./hack/headers" --check -v
 	$(call footer, $@)
 
 lint-mod:
@@ -85,15 +100,10 @@ lint-mod:
 	@cd $(MAKEFILE_DIR) && go mod tidy --diff
 	$(call footer, $@)
 
-# FIXME: go-licenses cannot find LICENSE from root of repo when submodule is imported:
-# https://github.com/google/go-licenses/issues/186
-# This is impacting gotest.tools
 lint-licenses:
 	$(call title, $@)
-	@cd $(MAKEFILE_DIR) && go-licenses check --include_tests --allowed_licenses=Apache-2.0,BSD-2-Clause,BSD-3-Clause,MIT \
-	  --ignore gotest.tools \
-	  ./...
-	@echo "WARNING: you need to manually verify licenses for:\n- gotest.tools"
+	@cd $(MAKEFILE_DIR) \
+		&& ./hack/make-lint-licenses.sh
 	$(call footer, $@)
 
 lint-licenses-all:
@@ -135,19 +145,15 @@ up:
 		&& go get -u ./...
 	$(call footer, $@)
 
-install-golangci:
-	$(call title, $@)
-	@cd $(MAKEFILE_DIR) \
-		&& go install github.com/golangci/golangci-lint/cmd/golangci-lint@89476e7a1eaa0a8a06c17343af960a5fd9e7edb7 # v1.62.2
-	$(call footer, $@)
-
 install-linters:
 	$(call title, $@)
+	# golangci: v1.62.2
 	# git-validation: main from 2023/11
 	# ltag: v0.2.5
 	# go-licenses: v2.0.0-alpha.1
 	# goimports-reviser: v3.8.2
 	@cd $(MAKEFILE_DIR) \
+		&& go install github.com/golangci/golangci-lint/cmd/golangci-lint@89476e7a1eaa0a8a06c17343af960a5fd9e7edb7 \
 		&& go install github.com/vbatts/git-validation@679e5cad8c50f1605ab3d8a0a947aaf72fb24c07 \
 		&& go install github.com/kunalkushwaha/ltag@b0cfa33e4cc9383095dc584d3990b62c95096de0 \
 		&& go install github.com/google/go-licenses/v2@d01822334fba5896920a060f762ea7ecdbd086e8 \
@@ -170,7 +176,7 @@ race-unit:
 	$(call footer, $@)
 
 .PHONY: lint lint-commits lint-go lint-go-all lint-headers lint-imports lint-licenses lint-licenses-all lint-mod lint-shell lint-yaml \
-	install-golangci install-linters \
+	install-linters \
 	fix fix-go fix-imports fix-mod \
 	update \
 	test test-unit race-unit bench-unit \
