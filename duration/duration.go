@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-// Forked from github.com/docker/go-units
+// Package duration is forked from github.com/docker/go-units
 package duration
 
 import (
