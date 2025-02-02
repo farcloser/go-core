@@ -39,7 +39,7 @@ const (
 )
 
 // HumanDuration returns a human-readable approximation of a duration
-// (eg. "About a minute", "4 hours ago", etc.).
+// (e.g. "About a minute", "4 hours ago", etc.).
 func HumanDuration(duration time.Duration) string {
 	switch seconds := int(duration.Seconds()); {
 	case seconds < minSeconds:

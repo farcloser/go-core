@@ -14,8 +14,7 @@
    limitations under the License.
 */
 
-// Forked from https://github.com/docker/go-units
-// under Apache License	2.0
+// Package units forked from https://github.com/docker/go-units under Apache License	2.0
 package units
 
 import (
@@ -86,19 +85,19 @@ func HumanSizeWithPrecision(size float64, precision int) string {
 }
 
 // HumanSize returns a human-readable approximation of a size
-// capped at 4 valid numbers (eg. "2.746 MB", "796 KB").
+// capped at 4 valid numbers (e.g. "2.746 MB", "796 KB").
 func HumanSize(size float64) string {
 	return HumanSizeWithPrecision(size, precision)
 }
 
 // BytesSize returns a human-readable size in bytes, kibibytes,
-// mebibytes, gibibytes, or tebibytes (eg. "44kiB", "17MiB").
+// mebibytes, gibibytes, or tebibytes (e.g. "44kiB", "17MiB").
 func BytesSize(size float64) string {
 	return CustomSize("%.4g%s", size, base, binaryAbbrs)
 }
 
 // FromHumanSize returns an integer from a human-readable specification of a
-// size using SI standard (eg. "44kB", "17MB").
+// size using SI standard (e.g. "44kB", "17MB").
 func FromHumanSize(size string) (int64, error) {
 	return parseSize(size, decimalMap)
 }

@@ -55,6 +55,8 @@ func (t providerCloser) Close() error {
 	return t.Shutdown(ctx)
 }
 
+// GetTracerProvider returns the registered global trace provider.
+//
 //nolint:ireturn
 func GetTracerProvider() TracerProvider {
 	return otel.GetTracerProvider()
