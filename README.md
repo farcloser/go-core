@@ -36,7 +36,7 @@ open http://localhost:8080/go.farcloser.world/core
 ### Charter
 
 1. This should contain solely stuff that is generic, likely to be used by 
-any reasonnable go project (eg: logging, telemetry, etc). Refrain from adding 
+any reasonnable go project (eg: logging, telemetry, etc.). Refrain from adding
 here anything that is specific to a given project, or ecosystem.
 
 2. Hide implementation away. Specifically, make sure the underlying dependencies

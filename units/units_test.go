@@ -49,9 +49,9 @@ func ExampleHumanSize() {
 	fmt.Println(units.HumanSize(1000000))
 	fmt.Println(units.HumanSize(1048576))
 	fmt.Println(units.HumanSize(2 * units.MB))
-	fmt.Println(units.HumanSize(float64(3.42 * units.GB)))
-	fmt.Println(units.HumanSize(float64(5.372 * units.TB)))
-	fmt.Println(units.HumanSize(float64(2.22 * units.PB)))
+	fmt.Println(units.HumanSize(3.42 * units.GB))
+	fmt.Println(units.HumanSize(5.372 * units.TB))
+	fmt.Println(units.HumanSize(2.22 * units.PB))
 	// Output:
 	// 1kB
 	// 1.024kB
@@ -140,9 +140,9 @@ func TestHumanSize(t *testing.T) {
 	assert.Equal(t, "1MB", units.HumanSize(1000000))
 	assert.Equal(t, "1.049MB", units.HumanSize(1048576))
 	assert.Equal(t, "2MB", units.HumanSize(2*units.MB))
-	assert.Equal(t, "3.42GB", units.HumanSize(float64(3.42*units.GB)))
-	assert.Equal(t, "5.372TB", units.HumanSize(float64(5.372*units.TB)))
-	assert.Equal(t, "2.22PB", units.HumanSize(float64(2.22*units.PB)))
+	assert.Equal(t, "3.42GB", units.HumanSize(3.42*units.GB))
+	assert.Equal(t, "5.372TB", units.HumanSize(5.372*units.TB))
+	assert.Equal(t, "2.22PB", units.HumanSize(2.22*units.PB))
 	assert.Equal(t, "1e+04YB", units.HumanSize(float64(10000000000000*units.PB)))
 }
 

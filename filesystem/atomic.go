@@ -55,28 +55,20 @@ func WriteFile(filename string, data []byte, perm os.FileMode) error {
 	}
 
 	if err = os.Chmod(tmpFile.Name(), perm); err != nil {
-		tmpFile.Close()
-
-		return errors.Join(ErrAtomicWriteFail, err)
+		return errors.Join(ErrAtomicWriteFail, err, tmpFile.Close())
 	}
 
 	n, err := io.Copy(tmpFile, reader)
 	if err == nil && n < dataSize {
-		tmpFile.Close()
-
-		return errors.Join(ErrAtomicWriteFail, io.ErrShortWrite)
+		return errors.Join(ErrAtomicWriteFail, io.ErrShortWrite, tmpFile.Close())
 	}
 
 	if err != nil {
-		tmpFile.Close()
-
-		return errors.Join(ErrAtomicWriteFail, err)
+		return errors.Join(ErrAtomicWriteFail, err, tmpFile.Close())
 	}
 
 	if err = tmpFile.Sync(); err != nil {
-		tmpFile.Close()
-
-		return errors.Join(ErrAtomicWriteFail, err)
+		return errors.Join(ErrAtomicWriteFail, err, tmpFile.Close())
 	}
 
 	if err = tmpFile.Close(); err != nil {
