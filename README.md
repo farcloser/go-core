@@ -15,7 +15,7 @@ Provides basics to be used by all our go projects, specifically:
 
 Review or call directly `./hack/dev-setup-linux.sh` or `./hack/dev-setup-macos.sh`
 
-Then, `make install-linters`
+Then, `make install-dev-tools`
 
 ### Makefile
 
