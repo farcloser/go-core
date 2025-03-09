@@ -36,6 +36,8 @@ import (
 
 const closeTimeout = 5 * time.Second
 
+var ErrCloseError = errors.New("close error")
+
 type TracerProvider = trace.TracerProvider
 
 type noopCloser struct{}
@@ -52,7 +54,12 @@ func (t providerCloser) Close() error {
 	ctx, cancel := context.WithTimeout(context.Background(), closeTimeout)
 	defer cancel()
 
-	return t.Shutdown(ctx)
+	err := t.Shutdown(ctx)
+	if err != nil {
+		err = errors.Join(ErrCloseError, err)
+	}
+
+	return err
 }
 
 // GetTracerProvider returns the registered global trace provider.
