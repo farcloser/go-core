@@ -27,6 +27,8 @@ type (
 	Constraints = semver.Constraints
 )
 
+var ErrInvalidVersion = errors.New("invalid version")
+
 var (
 	// ErrInvalidSemVer is returned a version is found to be invalid when
 	// being parsed.
@@ -59,5 +61,10 @@ func NewVersion(str string) (*Version, error) {
 }
 
 func NewConstraint(str string) (*Constraints, error) {
-	return semver.NewConstraint(str)
+	constraint, err := semver.NewConstraint(str)
+	if err != nil {
+		err = errors.Join(ErrInvalidVersion, err)
+	}
+
+	return constraint, err
 }

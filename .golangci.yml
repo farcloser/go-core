@@ -25,10 +25,15 @@ linters:
     - funlen  # not interested
     - cyclop  # not interested much
     - godox  # having these are useful
+
     # Duplicating
     - gci  # we use go-imports instead
+
     # Deprecated
     - tenv
+
+    # FIXME: under review
+    - wrapcheck
 
 linters-settings:
   staticcheck:
@@ -39,9 +44,13 @@ linters-settings:
     rules:
       main:
         files:
-          - "$all"
+          - $all
         allow:
           - $gostd
+          - go.farcloser.world/core
+          - go.opentelemetry.io/otel
+          - gotest.tools/v3/assert
+          - golang.org/x/sys/windows
           - github.com/rs/zerolog
           - github.com/getsentry/sentry-go
           - github.com/google/uuid
