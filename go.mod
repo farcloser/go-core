@@ -1,6 +1,6 @@
 module go.farcloser.world/core
 
-go 1.23.0
+go 1.24.0
 
 // 	go.opentelemetry.io/otel/exporters/jaeger v1.17.0
 

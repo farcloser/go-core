@@ -51,9 +51,9 @@ define footer
 endef
 
 # Tasks
-lint: lint-go-all lint-imports lint-commits lint-mod lint-licenses-all lint-headers lint-yaml lint-shell
+lint: lint-go-all lint-commits lint-mod lint-licenses-all lint-headers lint-yaml lint-shell
 
-fix: fix-mod fix-imports fix-go-all
+fix: fix-mod fix-go-all
 
 test: unit
 
@@ -75,12 +75,6 @@ lint-go-all:
 		&& GOOS=linux make lint-go \
 		&& GOOS=freebsd make lint-go \
 		&& GOOS=windows make lint-go
-	$(call footer, $@)
-
-lint-imports:
-	$(call title, $@)
-	@cd $(MAKEFILE_DIR) \
-		&& goimports-reviser -recursive -list-diff -set-exit-status -output stdout -company-prefixes "$(ORG_PREFIXES)"  ./...
 	$(call footer, $@)
 
 lint-yaml:
@@ -119,9 +113,8 @@ lint-mod:
 # This is impacting gotest.tools
 lint-licenses:
 	$(call title, $@: $(GOOS))
-	pwd
 	@cd $(MAKEFILE_DIR) \
-		&& go-licenses check --include_tests --allowed_licenses=Apache-2.0,BSD-2-Clause,BSD-3-Clause,MIT \
+		&& go-licenses check --include_tests --allowed_licenses=Apache-2.0,BSD-2-Clause,BSD-3-Clause,MIT,MPL-2.0 \
 		  --ignore gotest.tools \
 		  ./...
 	$(call footer, $@)
@@ -153,12 +146,6 @@ fix-go-all:
 		&& GOOS=windows make fix-go
 	$(call footer, $@)
 
-fix-imports:
-	$(call title, $@)
-	@cd $(MAKEFILE_DIR) \
-		&& goimports-reviser -company-prefixes $(ORG_PREFIXES) ./...
-	$(call footer, $@)
-
 fix-mod:
 	$(call title, $@)
 	@cd $(MAKEFILE_DIR) \
@@ -174,24 +161,24 @@ up:
 ##########################
 # Development tools installation
 ##########################
-install-dev-tools:
+install-dev-gotestsum:
+	# gotestsum: 1.12.1 (2025-03-15)
 	$(call title, $@)
-	# Updated 2025-03-07
-	# golangci: main (2025-03-06)
+	@cd $(MAKEFILE_DIR) \
+		&& go install gotest.tools/gotestsum@3f7ff0ec4aeb6f95f5d67c998b71f272aa8a8b41
+	$(call footer, $@)
+
+install-dev-tools: install-dev-gotestsum
+	$(call title, $@)
+	# golangci: v2.0.2 (2024-03-26)
 	# git-validation: main (2025-02-25)
 	# ltag: main (2025-03-04)
 	# go-licenses: v2.0.0-alpha.1 (2024-06-27)
-	# goimports-reviser: main (2025-02-24)
-	# gotestsum: main (2025-02-08)
-	# kubectl: v0.32.2 (2025-02-13)
-	# kind: v0.27.0 (2025-02-14)
 	@cd $(MAKEFILE_DIR) \
-		&& go install github.com/golangci/golangci-lint/cmd/golangci-lint@c13fd5b7627c436246f36044a575990b5ec75c7d \
+		&& go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@2b224c2cf4c9f261c22a16af7f8ca6408467f338 \
 		&& go install github.com/vbatts/git-validation@7b60e35b055dd2eab5844202ffffad51d9c93922 \
 		&& go install github.com/containerd/ltag@66e6a514664ee2d11a470735519fa22b1a9eaabd \
-		&& go install github.com/google/go-licenses/v2@d01822334fba5896920a060f762ea7ecdbd086e8 \
-		&& go install github.com/incu6us/goimports-reviser/v3@fb560c58db94476809ad5d99d4171dc0db4000d2 \
-		&& go install gotest.tools/gotestsum@c64e7cdde7ee34963b9e1eff7fdc71d91ea7eef0
+		&& go install github.com/google/go-licenses/v2@d01822334fba5896920a060f762ea7ecdbd086e8
 	@echo "Remember to add \$$HOME/go/bin to your path"
 	$(call footer, $@)
 
@@ -207,7 +194,7 @@ test-unit-bench:
 
 test-unit-race:
 	$(call title, $@)
-	@go test $(VERBOSE_FLAG) -count 1 $(MAKEFILE_DIR)/... -race
+	@CGO_ENABLED=1 go test $(VERBOSE_FLAG) $(MAKEFILE_DIR)/... -race
 	$(call footer, $@)
 
 .PHONY: \
@@ -217,6 +204,6 @@ test-unit-race:
 	up \
 	unit \
 	install-dev-tools \
-	lint-commits lint-go lint-go-all lint-headers lint-imports lint-licenses lint-licenses-all lint-mod lint-shell lint-yaml \
-	fix-go fix-go-all fix-imports fix-mod \
+	lint-commits lint-go lint-go-all lint-headers lint-licenses lint-licenses-all lint-mod lint-shell lint-yaml \
+	fix-go fix-go-all fix-mod \
 	test-unit test-unit-race test-unit-bench
