@@ -14,9 +14,5 @@
    limitations under the License.
 */
 
-package reporter
-
-import "errors"
-
-// ErrReporterInitFailed is returned when the reporter fails to initialize.
-var ErrReporterInitFailed = errors.New("reporter initialization failed")
+// Package log provides a simple logging interface based on zerolog.
+package log

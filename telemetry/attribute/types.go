@@ -20,6 +20,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 )
 
+// String creates an OpenTelemetry attribute with the given key and value.
 func String(k, v string) attribute.KeyValue {
 	return attribute.String(k, v)
 }

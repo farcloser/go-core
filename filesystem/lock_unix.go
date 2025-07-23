@@ -37,7 +37,9 @@ const (
 	writeLock lockType = syscall.LOCK_EX
 )
 
-func lock(path string, lockType lockType) (*os.File, error) {
+//nolint:wrapcheck
+func platformLock(path string, lockType lockType) (*os.File, error) {
+	//nolint:gosec
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -61,7 +63,8 @@ func lock(path string, lockType lockType) (*os.File, error) {
 	return file, nil
 }
 
-func unlock(file *os.File) (err error) {
+//nolint:wrapcheck
+func platformUnlock(file *os.File) (err error) {
 	defer func() {
 		if closeErr := file.Close(); closeErr != nil {
 			err = errors.Join(err, closeErr)

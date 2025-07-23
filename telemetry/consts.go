@@ -17,6 +17,8 @@
 package telemetry
 
 const (
+	// JAEGER represents the Jaeger exporter type.
 	JAEGER ExporterType = "jaeger"
+	// SENTRY represents the Sentry exporter type.
 	SENTRY ExporterType = "sentry"
 )

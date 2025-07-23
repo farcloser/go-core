@@ -20,8 +20,10 @@ package telemetry
 // PROMETHEUS ExporterType = "prometheus"
 // OTLP       ExporterType = "otlp"
 
+// ExporterType defines the type for exporters used by telemetry.
 type ExporterType string
 
+// Config holds the configuration for telemetry exporters.
 type Config struct {
 	ServiceName string       `json:"serviceName"`
 	Disabled    bool         `json:"disabled"`

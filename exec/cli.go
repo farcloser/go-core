@@ -33,8 +33,10 @@ import (
 
 // FIXME: rewrite this whole stuff
 
+// ErrExecResolutionFail is returned when the command resolution fails.
 var ErrExecResolutionFail = errors.New("resolve errored")
 
+// Resolve tries to resolve the binary name to its absolute path using the `command -v` command.
 func Resolve(binaryName string) (string, error) {
 	// https://unix.stackexchange.com/questions/85249/why-not-use-which-what-to-use-then
 	o, err := exec.Command("command", "-v", binaryName).Output()
@@ -45,7 +47,8 @@ func Resolve(binaryName string) (string, error) {
 	return strings.Trim(string(o), "\n"), nil
 }
 
-func New(defaultBinaryLocation string, environVariable string) *Commander {
+// New creates a new Commander instance with the given binary location and environment variable.
+func New(defaultBinaryLocation, environVariable string) *Commander {
 	// This is only useful for integration testing, really...
 	binaryLocation := os.Getenv(environVariable)
 	if binaryLocation == "" {
@@ -59,7 +62,9 @@ func New(defaultBinaryLocation string, environVariable string) *Commander {
 
 		resolvedLocation, err = os.Executable()
 		if err != nil {
-			reporter.CaptureException(fmt.Errorf("failed retrieving current binary information: %w", err))
+			reporter.CaptureException(
+				fmt.Errorf("failed retrieving current binary information: %w", err),
+			)
 			log.Fatal().Err(err).Msg("Cannot find current binary location. This is very wrong.")
 		}
 
@@ -72,9 +77,15 @@ func New(defaultBinaryLocation string, environVariable string) *Commander {
 	}
 
 	if _, err := os.Stat(resolvedLocation); err != nil {
-		w, _ := os.Getwd()
-		reporter.CaptureException(fmt.Errorf("failed finding cli %s with pwd %s - err: %w", binaryLocation, w, err))
-		log.Fatal().Str("pwd", w).Msgf("Failed finding cli %s with pwd %s - err: %s", binaryLocation, w, err)
+		workingDir, _ := os.Getwd()
+		reporter.CaptureException(
+			fmt.Errorf("failed finding cli %s with pwd %s - err: %w", binaryLocation, workingDir, err),
+		)
+		log.Fatal().
+			Str("pwd", workingDir).
+			Str("binary", binaryLocation).
+			Err(err).
+			Msg("failed finding cli")
 	}
 
 	return &Commander{
@@ -83,6 +94,7 @@ func New(defaultBinaryLocation string, environVariable string) *Commander {
 	}
 }
 
+// Commander is a struct that holds the information needed to execute a command.
 type Commander struct {
 	mu       *sync.Mutex
 	bin      string
@@ -93,6 +105,7 @@ type Commander struct {
 	NoReport bool
 }
 
+// Attach executes the command with the given arguments, attaching the standard input, output, and error streams.
 func (com *Commander) Attach(args ...string) error {
 	var err error
 	if com.Stdin != nil {
@@ -109,24 +122,29 @@ func (com *Commander) Attach(args ...string) error {
 	return err
 }
 
-func (com *Commander) Exec(args ...string) (string, string, error) {
+// Exec executes the command with the given arguments and returns the standard output and error as strings.
+func (com *Commander) Exec(args ...string) (sout, serr string, err error) {
 	var stdout bytes.Buffer
 
 	var stderr bytes.Buffer
 
-	err := com.ExecPipes(com.Stdin, &stdout, &stderr, args...)
-	sout := stdout.String()
-	serr := stderr.String()
+	err = com.ExecPipes(com.Stdin, &stdout, &stderr, args...)
+	sout = stdout.String()
+	serr = stderr.String()
 
 	if !com.NoReport && err != nil {
-		reporter.CaptureException(fmt.Errorf("failed sub execution: %w - out: %s - err: %s", err, sout, serr))
+		reporter.CaptureException(
+			fmt.Errorf("failed sub execution: %w - out: %s - err: %s", err, sout, serr),
+		)
 		log.Error().Err(err).Str("out", sout).Str("err", serr).Msg("Execution failed")
 	}
 
 	return sout, serr, err
 }
 
-func (com *Commander) ExecPipes(stdin io.Reader, stdout io.Writer, stderr io.Writer, args ...string) error {
+// ExecPipes executes the command with the given arguments, allowing for custom standard input, output, and error
+// streams.
+func (com *Commander) ExecPipes(stdin io.Reader, stdout, stderr io.Writer, args ...string) error {
 	args = append(com.PreArgs, args...)
 
 	envs := []string{}
@@ -134,7 +152,11 @@ func (com *Commander) ExecPipes(stdin io.Reader, stdout io.Writer, stderr io.Wri
 		envs = append(envs, fmt.Sprintf("%s=%s", k, v))
 	}
 
-	log.Debug().Str("binary", com.bin).Strs("arguments", args).Strs("env", envs).Msg("Executing command")
+	log.Debug().
+		Str("binary", com.bin).
+		Strs("arguments", args).
+		Strs("env", envs).
+		Msg("Executing command")
 
 	command := exec.Command(com.bin, args...) //nolint:gosec
 	if com.Dir != "" {

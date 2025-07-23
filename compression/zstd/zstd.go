@@ -23,19 +23,27 @@ import (
 )
 
 type (
+	// EncoderLevel predefines encoder compression levels.
 	EncoderLevel = cmp.EncoderLevel
-	Encoder      = cmp.Encoder
-	EOption      = cmp.EOption
+	// Encoder provides encoding to Zstandard.
+	Encoder = cmp.Encoder
+	// EOption is an option for creating a encoder.
+	EOption = cmp.EOption
 )
 
+// EncoderLevelFromZstd converts a zstd compression level to an EncoderLevel.
 func EncoderLevelFromZstd(level int) EncoderLevel {
 	return cmp.EncoderLevelFromZstd(level)
 }
 
+// NewWriter creates a new Zstandard encoder that writes to the provided io.Writer.
+//
+//nolint:wrapcheck
 func NewWriter(w io.Writer, opts ...EOption) (*Encoder, error) {
 	return cmp.NewWriter(w, opts...)
 }
 
+// WithEncoderLevel sets the compression level for the encoder.
 func WithEncoderLevel(l EncoderLevel) EOption {
 	return cmp.WithEncoderLevel(l)
 }

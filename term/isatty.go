@@ -18,6 +18,7 @@ package term
 
 import "github.com/mattn/go-isatty"
 
+// IsTerminal checks if the file descriptor is a terminal.
 func IsTerminal(fd uintptr) bool {
 	return isatty.IsTerminal(fd)
 }

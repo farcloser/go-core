@@ -14,6 +14,7 @@
    limitations under the License.
 */
 
+//revive:disable:add-constant
 package units_test
 
 import (
@@ -129,7 +130,11 @@ func TestBytesSize(t *testing.T) {
 	assert.Equal(t, "3.42GiB", units.BytesSize(3.42*units.GiB))
 	assert.Equal(t, "5.372TiB", units.BytesSize(5.372*units.TiB))
 	assert.Equal(t, "2.22PiB", units.BytesSize(2.22*units.PiB))
-	assert.Equal(t, "1.049e+06YiB", units.BytesSize(units.KiB*units.KiB*units.KiB*units.KiB*units.KiB*units.PiB))
+	assert.Equal(
+		t,
+		"1.049e+06YiB",
+		units.BytesSize(units.KiB*units.KiB*units.KiB*units.KiB*units.KiB*units.PiB),
+	)
 }
 
 func TestHumanSize(t *testing.T) {
@@ -146,6 +151,7 @@ func TestHumanSize(t *testing.T) {
 	assert.Equal(t, "1e+04YB", units.HumanSize(float64(10000000000000*units.PB)))
 }
 
+//revive:disable:function-length
 func TestFromHumanSize(t *testing.T) {
 	t.Parallel()
 

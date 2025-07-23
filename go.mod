@@ -2,8 +2,6 @@ module go.farcloser.world/core
 
 go 1.24.0
 
-// 	go.opentelemetry.io/otel/exporters/jaeger v1.17.0
-
 require (
 	github.com/Masterminds/semver/v3 v3.3.1
 	github.com/getsentry/sentry-go v0.31.1

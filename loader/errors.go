@@ -19,7 +19,10 @@ package loader
 import "errors"
 
 var (
-	ErrConfigLoadFail   = errors.New("failed reading config file")
-	ErrConfigSaveFail   = errors.New("failed saving config file")
+	// ErrConfigLoadFail is returned when the configuration file cannot be loaded.
+	ErrConfigLoadFail = errors.New("failed reading config file")
+	// ErrConfigSaveFail is returned when the configuration file cannot be saved.
+	ErrConfigSaveFail = errors.New("failed saving config file")
+	// ErrConfigRemoveFail is returned when the configuration file cannot be removed.
 	ErrConfigRemoveFail = errors.New("failed removing config file")
 )

@@ -18,6 +18,7 @@ package filesystem
 
 var currentMask = defaultUmask //nolint:gochecknoglobals
 
+// SetUmask sets the file mode creation mask (umask) for the current process.
 func SetUmask(mask uint32) {
 	if mask == currentMask {
 		return
@@ -27,6 +28,7 @@ func SetUmask(mask uint32) {
 	_ = umask(int(mask))
 }
 
+// GetUmask retrieves the current file mode creation mask (umask) for the current process.
 func GetUmask() uint32 {
 	return currentMask
 }

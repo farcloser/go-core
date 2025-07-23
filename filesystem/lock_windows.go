@@ -46,7 +46,9 @@ const (
 	lockPermission = 0o600
 )
 
-func lock(path string, lockType lockType) (file *os.File, err error) {
+//nolint:wrapcheck
+func platformLock(path string, lockType lockType) (file *os.File, err error) {
+	//nolint:gosec
 	file, err = os.OpenFile(path+".lock", os.O_CREATE, lockPermission)
 	if err != nil {
 		return nil, err
@@ -65,7 +67,8 @@ func lock(path string, lockType lockType) (file *os.File, err error) {
 	return file, nil
 }
 
-func unlock(file *os.File) (err error) {
+//nolint:wrapcheck
+func platformUnlock(file *os.File) (err error) {
 	defer func() {
 		if closeErr := file.Close(); closeErr != nil {
 			err = errors.Join(err, closeErr)

@@ -18,4 +18,5 @@ package store
 
 import "errors"
 
+// ErrFileStoreFail indicates that a file store operation has failed.
 var ErrFileStoreFail = errors.New("file store operation failed")

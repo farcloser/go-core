@@ -18,6 +18,7 @@ package filesystem
 
 import "math"
 
+// Init initializes the filesystem package by retrieving the current process umask.
 func Init() {
 	// Retrieve the current umask as a starting point
 	cMask := umask(0)

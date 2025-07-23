@@ -18,6 +18,7 @@ package reporter
 
 import "net/http"
 
+// Config holds the configuration for the reporter.
 type Config struct {
 	httpClient *http.Client
 

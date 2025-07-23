@@ -36,8 +36,8 @@ import (
 
 const closeTimeout = 5 * time.Second
 
-var ErrCloseError = errors.New("close error")
-
+// TracerProvider provides Tracers that are used by instrumentation code to
+// trace computational workflows.
 type TracerProvider = trace.TracerProvider
 
 type noopCloser struct{}
@@ -50,6 +50,7 @@ type providerCloser struct {
 	*sdktrace.TracerProvider
 }
 
+// Close closes the tracer provider and any associated resources.
 func (t providerCloser) Close() error {
 	ctx, cancel := context.WithTimeout(context.Background(), closeTimeout)
 	defer cancel()
@@ -69,6 +70,7 @@ func GetTracerProvider() TracerProvider {
 	return otel.GetTracerProvider()
 }
 
+// Init initializes the telemetry provider based on the provided configuration.
 func Init(conf *Config) (io.Closer, error) {
 	if conf.Disabled {
 		log.Warn().Msg("Telemetry is disabled.")
@@ -89,7 +91,7 @@ func Init(conf *Config) (io.Closer, error) {
 	}, nil
 }
 
-func provider(expType ExporterType, url string, serviceName string) (*sdktrace.TracerProvider, error) {
+func provider(expType ExporterType, url, serviceName string) (*sdktrace.TracerProvider, error) {
 	var err error
 
 	var exp sdktrace.SpanExporter

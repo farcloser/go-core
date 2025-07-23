@@ -20,6 +20,7 @@ import (
 	guuid "github.com/google/uuid"
 )
 
+// New generates a new UUID (version 7) and returns it as a string.
 func New() string {
 	uuid, _ := guuid.NewV7()
 

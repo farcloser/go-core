@@ -26,7 +26,7 @@ import (
 var network *Network //nolint:gochecknoglobals
 
 // Init should be called when the app starts, from config objects.
-func Init(clientConf *Config, serverConf *Config) {
+func Init(clientConf, serverConf *Config) {
 	log.Debug().Msg("Initializing network core with config")
 
 	network = &Network{
@@ -37,10 +37,12 @@ func Init(clientConf *Config, serverConf *Config) {
 	http.DefaultTransport = network.Transport()
 }
 
+// GetTLSConfig returns the TLS configuration for the network.
 func GetTLSConfig() *tls.Config {
 	return network.TLSConfig()
 }
 
+// GetTransport returns the HTTP transport for the network.
 func GetTransport() *Transport {
 	return network.Transport()
 }
