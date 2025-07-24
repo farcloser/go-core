@@ -14,7 +14,6 @@
    limitations under the License.
 */
 
-//nolint:zerologlint
 package log
 
 import (
@@ -41,14 +40,17 @@ func Init(conf *Config) {
 	}
 }
 
+// SetLevel sets the global log level.
 func SetLevel(lv Level) {
 	zerolog.SetGlobalLevel(lv)
 }
 
+// GetLevel returns the current global log level.
 func GetLevel() Level {
 	return zerolog.GlobalLevel()
 }
 
+// DebugSink is a sink for debug logs that reads from the provided reader.
 func DebugSink(reader io.Reader) {
 	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
@@ -56,6 +58,7 @@ func DebugSink(reader io.Reader) {
 	}
 }
 
+// WarnSink is a sink for warning logs that reads from the provided reader.
 func WarnSink(reader io.Reader) {
 	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
@@ -63,6 +66,7 @@ func WarnSink(reader io.Reader) {
 	}
 }
 
+// ErrorSink is a sink for error logs that reads from the provided reader.
 func ErrorSink(reader io.Reader) {
 	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
@@ -70,22 +74,37 @@ func ErrorSink(reader io.Reader) {
 	}
 }
 
+// Error returns an Event for an error.
+//
+//nolint:zerologlint
 func Error() *Event {
 	return log.Error()
 }
 
+// Warn returns an Event for a warning.
+//
+//nolint:zerologlint
 func Warn() *Event {
 	return log.Warn()
 }
 
+// Info returns an Event for informational messages.
+//
+//nolint:zerologlint
 func Info() *Event {
 	return log.Info()
 }
 
+// Debug returns an Event for debug messages.
+//
+//nolint:zerologlint
 func Debug() *Event {
 	return log.Debug()
 }
 
+// Fatal returns an Event for fatal messages and exits the application.
+//
+//nolint:zerologlint
 func Fatal() *Event {
 	return log.Fatal()
 }

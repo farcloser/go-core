@@ -14,6 +14,7 @@
    limitations under the License.
 */
 
+// Package app provides a minimalistic application configuration setup.
 package app
 
 // Use this for minimalistic apps that do not need configuration beyond Core,

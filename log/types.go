@@ -19,6 +19,8 @@ package log
 import "github.com/rs/zerolog"
 
 type (
+	// Level defines log levels.
 	Level = zerolog.Level
+	// Event defines a log event.
 	Event = zerolog.Event
 )

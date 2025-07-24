@@ -14,9 +14,5 @@
    limitations under the License.
 */
 
+// Package reporter provides functionality to report issues, errors, or logs in a structured way to a remote endpoint.
 package reporter
-
-import "errors"
-
-// ErrReporterInitFailed is returned when the reporter fails to initialize.
-var ErrReporterInitFailed = errors.New("reporter initialization failed")

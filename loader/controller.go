@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+//revive:disable:confusing-naming
+
 package loader
 
 import (
@@ -46,12 +48,14 @@ type IConfiguration interface {
 	GetLocation() []string
 }
 
+// Exist checks if the configuration file exists at the specified location.
 func Exist(obj IConfiguration) bool {
 	_, err := os.Stat(absolute(obj.GetLocation()...))
 
 	return err == nil || !errors.Is(err, os.ErrNotExist)
 }
 
+// Load reads the configuration from the specified location and applies it to the provided object.
 func Load(obj IConfiguration) error {
 	err := read(obj, obj.GetLocation()...)
 	if err != nil {
@@ -63,6 +67,7 @@ func Load(obj IConfiguration) error {
 	return nil
 }
 
+// Save writes the current state of the configuration object to the specified location.
 func Save(obj IConfiguration) error {
 	obj.OnIO()
 
@@ -74,6 +79,7 @@ func Save(obj IConfiguration) error {
 	return err
 }
 
+// Remove deletes the configuration file at the specified location.
 func Remove(obj IConfiguration) error {
 	err := remove(obj.GetLocation()...)
 	if err != nil {

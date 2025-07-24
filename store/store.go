@@ -47,11 +47,13 @@ func hash(s string) string {
 	return fmt.Sprintf("%x", sha256.Sum256([]byte(s)))
 }
 
+// Options for the store.
 type Options struct {
 	Path      string
 	CacheSize int64
 }
 
+// New creates a new Store with the given options.
 func New(options *Options) *Store {
 	path := options.Path
 	if path == "" {
@@ -80,11 +82,13 @@ func New(options *Options) *Store {
 	}
 }
 
+// Store is a file-based key-value store using diskv.
 type Store struct {
 	diskv *diskv.Diskv
 	lock  *os.File
 }
 
+// Read reads the content of a file by its name.
 func (st *Store) Read(name string) (content []byte, err error) {
 	if st.lock == nil {
 		err = st.ReadOnlyLock()
@@ -107,6 +111,7 @@ func (st *Store) Read(name string) (content []byte, err error) {
 	return content, err
 }
 
+// ReadFromKey reads the content of a file by its key.
 func (st *Store) ReadFromKey(key string) (content []byte, err error) {
 	if st.lock == nil {
 		err = st.ReadOnlyLock()
@@ -129,6 +134,7 @@ func (st *Store) ReadFromKey(key string) (content []byte, err error) {
 	return content, err
 }
 
+// Has checks if a file with the given name exists in the store.
 func (st *Store) Has(name string) (has bool, err error) {
 	if st.lock == nil {
 		err = st.ReadOnlyLock()
@@ -146,14 +152,17 @@ func (st *Store) Has(name string) (has bool, err error) {
 	return st.diskv.Has(hash(name)), nil
 }
 
+// Keys returns a channel that emits all keys in the store.
 func (st *Store) Keys() <-chan string {
 	return st.diskv.Keys(nil)
 }
 
-func (st *Store) Digest(name string) string {
+// Digest returns a hash of the given name, which can be used as a key.
+func (*Store) Digest(name string) string {
 	return hash(name)
 }
 
+// Write writes the content to a file with the given name.
 func (st *Store) Write(name string, value []byte) (err error) {
 	if st.lock == nil {
 		err = st.WriteLock()
@@ -176,6 +185,7 @@ func (st *Store) Write(name string, value []byte) (err error) {
 	return err
 }
 
+// Delete removes a file with the given name from the store.
 func (st *Store) Delete(name string) (err error) {
 	if st.lock == nil {
 		err = st.WriteLock()
@@ -198,6 +208,7 @@ func (st *Store) Delete(name string) (err error) {
 	return err
 }
 
+// Rename renames a file from oldName to newName in the store.
 func (st *Store) Rename(oldName, newName string) (err error) {
 	if st.lock == nil {
 		err = st.WriteLock()
@@ -232,10 +243,11 @@ func (st *Store) Lock() (err error) {
 	return st.WriteLock()
 }
 
+// WriteLock acquires an exclusive lock for writing to the store.
 func (st *Store) WriteLock() (err error) {
 	err = os.MkdirAll(st.diskv.BasePath, filesystem.DirPermissionsPrivate)
 	if err != nil {
-		return err
+		return errors.Join(ErrFileStoreFail, err)
 	}
 
 	lock, err := filesystem.Lock(st.diskv.BasePath)
@@ -248,10 +260,11 @@ func (st *Store) WriteLock() (err error) {
 	return err
 }
 
+// ReadOnlyLock acquires a read-only lock for the store.
 func (st *Store) ReadOnlyLock() (err error) {
 	err = os.MkdirAll(st.diskv.BasePath, filesystem.DirPermissionsPrivate)
 	if err != nil {
-		return err
+		return errors.Join(ErrFileStoreFail, err)
 	}
 
 	lock, err := filesystem.ReadOnlyLock(st.diskv.BasePath)
@@ -264,6 +277,7 @@ func (st *Store) ReadOnlyLock() (err error) {
 	return err
 }
 
+// Unlock releases the lock on the store.
 func (st *Store) Unlock() (err error) {
 	defer func() {
 		if err != nil {

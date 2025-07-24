@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+//revive:disable:confusing-naming
+
 package loader
 
 import (
@@ -39,12 +41,14 @@ func absolute(location ...string) string {
 	return loc
 }
 
-func read(cfg interface{}, location ...string) error {
+//nolint:wrapcheck
+func read(cfg any, location ...string) error {
 	loc := absolute(location...)
 
 	mut.Lock()
 	defer mut.Unlock()
 
+	//nolint:gosec
 	data, err := os.ReadFile(loc)
 	if err != nil {
 		return err
@@ -53,7 +57,7 @@ func read(cfg interface{}, location ...string) error {
 	return json.Unmarshal(data, &cfg)
 }
 
-func write(cfg interface{}, location ...string) error {
+func write(cfg any, location ...string) error {
 	loc := absolute(location...)
 
 	mut.Lock()
@@ -61,14 +65,17 @@ func write(cfg interface{}, location ...string) error {
 
 	err := os.MkdirAll(path.Dir(loc), filesystem.DirPermissionsDefault)
 	if err != nil {
+		//nolint:wrapcheck
 		return err
 	}
 
 	data, err := json.MarshalIndent(&cfg, "", " ")
 	if err != nil {
+		//nolint:wrapcheck
 		return err
 	}
 
+	//nolint:wrapcheck
 	return filesystem.WriteFile(loc, data, filesystem.FilePermissionsDefault)
 }
 
@@ -78,5 +85,6 @@ func remove(location ...string) error {
 	mut.Lock()
 	defer mut.Unlock()
 
+	//nolint:wrapcheck
 	return os.Remove(loc)
 }

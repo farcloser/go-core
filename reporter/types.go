@@ -19,6 +19,8 @@ package reporter
 import "github.com/getsentry/sentry-go"
 
 type (
+	// EventID is a hexadecimal string representing a unique uuid4 for an Event.
 	EventID = sentry.EventID
-	Event   = sentry.Event
+	// Event is the fundamental data structure that is sent to Sentry.
+	Event = sentry.Event
 )

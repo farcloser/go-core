@@ -30,6 +30,7 @@ import (
 	"go.farcloser.world/core/telemetry"
 )
 
+// New creates a new Core configuration object.
 func New(appName string, location ...string) *Core {
 	conf := &Core{
 		location: append([]string{appName}, location...),
@@ -63,6 +64,7 @@ func New(appName string, location ...string) *Core {
 	return conf
 }
 
+// Core is the core configuration object.
 type Core struct {
 	Reporter  *reporter.Config  `json:"reporter,omitempty"`
 	Logger    *log.Config       `json:"logger,omitempty"`
@@ -75,6 +77,7 @@ type Core struct {
 	location []string
 }
 
+// Trust does trust a certificate for both client and server.
 func (obj *Core) Trust(ca ...string) {
 	if len(ca) > 0 {
 		obj.Server.ClientCA = ca[0]
@@ -82,6 +85,7 @@ func (obj *Core) Trust(ca ...string) {
 	}
 }
 
+// Resolve resolves a location against the config file's directory.
 func (obj *Core) Resolve(location ...string) string {
 	// Get the absolute path of the containing dir of the config file, resolved against UserConfigDir
 	base := absolute(obj.location[:len(obj.location)-1]...)
@@ -95,6 +99,7 @@ func (obj *Core) Resolve(location ...string) string {
 	return loc
 }
 
+// Ensure ensures that the parent directory of the given location exists.
 func (obj *Core) Ensure(location ...string) error {
 	// Get the absolute path of the containing dir of the config file, resolved against UserConfigDir
 	base := absolute(obj.location[:len(obj.location)-1]...)
@@ -112,6 +117,7 @@ func (obj *Core) Ensure(location ...string) error {
 	return err
 }
 
+// OnIO is called when the IO subsystem is initialized.
 func (obj *Core) OnIO() {
 	// Note: calling init everytime we load is not super efficient, but then, how often does that happen?
 	// Init filesystem first (capture the current, actual umask before we do anything)
@@ -120,10 +126,12 @@ func (obj *Core) OnIO() {
 	filesystem.SetUmask(obj.Umask)
 }
 
+// GetLocation returns the location of the config file.
 func (obj *Core) GetLocation() []string {
 	return obj.location
 }
 
+// GetDataRoot returns the data root directory for the application.
 func (obj *Core) GetDataRoot() string {
 	var loc string
 
@@ -143,12 +151,14 @@ func (obj *Core) GetDataRoot() string {
 	return loc
 }
 
-func (obj *Core) GetHome() string {
+// GetHome returns the home directory of the current user.
+func (*Core) GetHome() string {
 	home, _ := os.UserHomeDir()
 
 	return home
 }
 
+// GetCacheRoot returns the cache root directory for the application.
 func (obj *Core) GetCacheRoot() string {
 	base, _ := os.UserCacheDir()
 
@@ -160,6 +170,7 @@ func (obj *Core) GetCacheRoot() string {
 	return loc
 }
 
+// GetLogRoot returns the log root directory for the application.
 func (obj *Core) GetLogRoot() string {
 	var loc string
 

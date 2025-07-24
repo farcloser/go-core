@@ -17,10 +17,12 @@
 package filesystem
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 )
 
+// DirectorySize calculates the total size of all files in a directory and its subdirectories.
 func DirectorySize(path string) (int64, error) {
 	var size int64
 
@@ -38,7 +40,7 @@ func DirectorySize(path string) (int64, error) {
 
 	err := filepath.Walk(path, iterator)
 	if err != nil {
-		return 0, err
+		return 0, errors.Join(ErrGenericFailure, err)
 	}
 
 	return size, nil

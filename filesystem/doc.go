@@ -14,9 +14,5 @@
    limitations under the License.
 */
 
-package reporter
-
-import "errors"
-
-// ErrReporterInitFailed is returned when the reporter fails to initialize.
-var ErrReporterInitFailed = errors.New("reporter initialization failed")
+// Package filesystem provides utilities for working with file system paths and operations in a safe way.
+package filesystem

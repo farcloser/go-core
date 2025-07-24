@@ -38,7 +38,7 @@ runs:
             norm+=("$line_trimmed")
           done < \
             <(sed -E 's/^go([0-9]+)[.]([0-9]+)([.]([0-9]+))?(([a-z]+)([0-9]+))?/\1.\2\n\4\n\6\n\7/i' \
-              <(curl -fsSL "https://go.dev/dl/?mode=json&include=all" | jq -rc .[0].version) \
+              <(curl --proto '=https' --tlsv1.2 -fsSL "https://go.dev/dl/?mode=json&include=all" | jq -rc .[0].version) \
             )
           # Serialize version, making sure we have a patch version, and separate possible rcX into .rc-X
           [ "${norm[1]}" != "" ] || norm[1]="0"

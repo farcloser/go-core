@@ -23,10 +23,13 @@ import (
 )
 
 type (
-	Version     = semver.Version
+	// Version represents a single semantic version.
+	Version = semver.Version
+	// Constraints represents a set of semantic version constraints.
 	Constraints = semver.Constraints
 )
 
+// ErrInvalidVersion is returned when a version string is invalid or cannot be parsed.
 var ErrInvalidVersion = errors.New("invalid version")
 
 var (
@@ -45,6 +48,7 @@ var (
 	ErrInvalidPrerelease = semver.ErrInvalidPrerelease
 )
 
+// NewVersion creates a new semantic version from a string.
 func NewVersion(str string) (*Version, error) {
 	// ErrInvalidSemVer, or fmt.Errorf("Error parsing version segment: %s", errFromStrConv)
 	// ErrInvalidMetadata,
@@ -60,6 +64,7 @@ func NewVersion(str string) (*Version, error) {
 	return version, err
 }
 
+// NewConstraint creates a new semantic version constraint from a string.
 func NewConstraint(str string) (*Constraints, error) {
 	constraint, err := semver.NewConstraint(str)
 	if err != nil {

@@ -60,18 +60,22 @@ func Init(conf *Config) error {
 	return nil
 }
 
+// CaptureException captures an error.
 func CaptureException(err error) *EventID {
 	return sentry.CaptureException(err)
 }
 
+// CaptureMessage captures a message.
 func CaptureMessage(msg string) *EventID {
 	return sentry.CaptureMessage(msg)
 }
 
+// CaptureEvent captures a structured event.
 func CaptureEvent(e *Event) *EventID {
 	return sentry.CaptureEvent(e)
 }
 
+// Shutdown flushes buffered events before the program terminates.
 func Shutdown() {
 	// Flush buffered events before the program terminates.
 	// Set the timeout to the maximum duration the program can afford to wait.

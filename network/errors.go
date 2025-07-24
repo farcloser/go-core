@@ -19,6 +19,8 @@ package network
 import "errors"
 
 var (
-	ErrRoundTrip                 = errors.New("round trip error")
+	// ErrRoundTrip is returned when a round trip operation fails.
+	ErrRoundTrip = errors.New("round trip error")
+	// ErrInterfacesRetrievalFailed is returned when retrieving network interfaces fails.
 	ErrInterfacesRetrievalFailed = errors.New("retrieving interfaces failed")
 )

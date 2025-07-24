@@ -17,10 +17,15 @@
 package filesystem
 
 const (
+	// FilePermissionsDefault is the default file permission for newly created files.
 	FilePermissionsDefault = 0o644
-	DirPermissionsDefault  = 0o755
+	// DirPermissionsDefault is the default directory permission for newly created directories.
+	DirPermissionsDefault = 0o755
+	// FilePermissionsPrivate is the permission for private files, only readable and writable by the owner.
 	FilePermissionsPrivate = 0o600
-	DirPermissionsPrivate  = 0o700
+	// DirPermissionsPrivate is the permission for private directories, only readable, writable, and executable by the
+	// owner.
+	DirPermissionsPrivate = 0o700
 
 	defaultUmask uint32 = 0o077
 

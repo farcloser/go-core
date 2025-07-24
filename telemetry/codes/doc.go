@@ -14,9 +14,5 @@
    limitations under the License.
 */
 
-package reporter
-
-import "errors"
-
-// ErrReporterInitFailed is returned when the reporter fails to initialize.
-var ErrReporterInitFailed = errors.New("reporter initialization failed")
+// Package codes wraps OpenTelemetry codes package to provide a consistent set of error codes for telemetry operations.
+package codes

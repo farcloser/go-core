@@ -19,6 +19,10 @@ package telemetry
 import "errors"
 
 var (
+	// ErrCloseError is returned when the telemetry provider fails to close properly.
+	ErrCloseError = errors.New("close error")
+	// ErrUnsupportedProviderType is returned when an unsupported provider type is used.
 	ErrUnsupportedProviderType = errors.New("unsupported provider type")
-	ErrProviderCreationFailed  = errors.New("provider creation failed")
+	// ErrProviderCreationFailed is returned when the telemetry provider cannot be created.
+	ErrProviderCreationFailed = errors.New("provider creation failed")
 )

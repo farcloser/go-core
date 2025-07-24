@@ -37,7 +37,7 @@ import (
 // If Lock returns nil, no other process will be able to place a read or write
 // lock on the file until this process exits, closes f, or calls Unlock on it.
 func Lock(path string) (*os.File, error) {
-	file, err := lock(path, writeLock)
+	file, err := platformLock(path, writeLock)
 	if err != nil {
 		err = errors.Join(ErrLockFail, err)
 	}
@@ -50,7 +50,7 @@ func Lock(path string) (*os.File, error) {
 // If ReadOnlyLock returns nil, no other process will be able to place a write lock on
 // the file until this process exits, closes f, or calls Unlock on it.
 func ReadOnlyLock(path string) (*os.File, error) {
-	file, err := lock(path, readLock)
+	file, err := platformLock(path, readLock)
 	if err != nil {
 		err = errors.Join(ErrLockFail, err)
 	}
@@ -64,7 +64,7 @@ func Unlock(lock *os.File) error {
 		return ErrLockIsNil
 	}
 
-	err := unlock(lock)
+	err := platformUnlock(lock)
 	if err != nil {
 		err = errors.Join(ErrUnlockFail, err)
 	}
@@ -72,6 +72,7 @@ func Unlock(lock *os.File) error {
 	return err
 }
 
+// WithLock acquires a write lock on the file at path, and executes the provided function.
 func WithLock(path string, function func() error) (err error) {
 	file, err := Lock(path)
 	if err != nil {
@@ -85,6 +86,7 @@ func WithLock(path string, function func() error) (err error) {
 	return function()
 }
 
+// WithReadOnlyLock acquires a read lock on the file at path, and executes the provided function.
 func WithReadOnlyLock(path string, function func() error) (err error) {
 	file, err := ReadOnlyLock(path)
 	if err != nil {

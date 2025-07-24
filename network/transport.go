@@ -31,6 +31,7 @@ type Transport struct {
 	TokenType  string
 }
 
+// RoundTrip implements the http.RoundTripper interface.
 func (adt *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	if adt.TokenValue != "" {
 		req.Header.Add("Authorization", fmt.Sprintf("%s %s", adt.TokenType, adt.TokenValue))

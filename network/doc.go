@@ -14,9 +14,5 @@
    limitations under the License.
 */
 
-package reporter
-
-import "errors"
-
-// ErrReporterInitFailed is returned when the reporter fails to initialize.
-var ErrReporterInitFailed = errors.New("reporter initialization failed")
+// Package network provides utilities for working with network-related tasks.
+package network

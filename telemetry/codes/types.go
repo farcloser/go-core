@@ -20,4 +20,5 @@ import (
 	"go.opentelemetry.io/otel/codes"
 )
 
+// Error indicates the operation contains an error.
 const Error = codes.Error

@@ -19,6 +19,8 @@ package units
 import "errors"
 
 var (
-	ErrInvalidSize   = errors.New("invalid size")
+	// ErrInvalidSize is returned when the size is invalid.
+	ErrInvalidSize = errors.New("invalid size")
+	// ErrInvalidSuffix is returned when the unit is invalid.
 	ErrInvalidSuffix = errors.New("invalid suffix")
 )

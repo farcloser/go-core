@@ -33,13 +33,19 @@ import (
 */
 
 type (
+	// Interface represents a mapping between network interface name.
 	Interface = net.Interface
-	Address   = net.Addr
+	// Address represents a network address, which can be an IP address or a Unix socket address.
+	Address = net.Addr
 )
 
+// Interfaces is a struct that provides methods to retrieve network interfaces and their addresses.
 type Interfaces struct{}
 
-func (obj *Interfaces) GetAddresses(onlyIPv4 bool, onlyName string) ([]Address, error) {
+// GetAddresses retrieves all network addresses of the system, optionally filtering by IPv4.
+//
+//revive:disable:flag-parameter
+func (*Interfaces) GetAddresses(onlyIPv4 bool, onlyName string) ([]Address, error) {
 	list, err := net.Interfaces()
 	if err != nil {
 		return nil, errors.Join(ErrInterfacesRetrievalFailed, err)

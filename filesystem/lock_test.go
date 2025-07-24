@@ -16,6 +16,7 @@
    limitations under the License.
 */
 
+//revive:disable:add-constant
 package filesystem_test
 
 import (

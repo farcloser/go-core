@@ -15,6 +15,8 @@
 */
 
 // Package units forked from https://github.com/docker/go-units under Apache License	2.0
+//
+//revive:disable:add-constant
 package units
 
 import (
@@ -49,14 +51,47 @@ const (
 
 type unitMap map[byte]int64
 
+//nolint:gochecknoglobals
 var (
-	decimalMap   = unitMap{'k': KB, 'm': MB, 'g': GB, 't': TB, 'p': PB}                  //nolint:gochecknoglobals
-	binaryMap    = unitMap{'k': KiB, 'm': MiB, 'g': GiB, 't': TiB, 'p': PiB}             //nolint:gochecknoglobals
-	decimapAbbrs = []string{"B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"}         //nolint:gochecknoglobals
-	binaryAbbrs  = []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"} //nolint:gochecknoglobals
+	decimalMap = unitMap{
+		'k': KB,
+		'm': MB,
+		'g': GB,
+		't': TB,
+		'p': PB,
+	}
+	binaryMap = unitMap{
+		'k': KiB,
+		'm': MiB,
+		'g': GiB,
+		't': TiB,
+		'p': PiB,
+	}
+	decimapAbbrs = []string{
+		"B",
+		"kB",
+		"MB",
+		"GB",
+		"TB",
+		"PB",
+		"EB",
+		"ZB",
+		"YB",
+	}
+	binaryAbbrs = []string{
+		"B",
+		"KiB",
+		"MiB",
+		"GiB",
+		"TiB",
+		"PiB",
+		"EiB",
+		"ZiB",
+		"YiB",
+	}
 )
 
-func getSizeAndUnit(size float64, base float64, _map []string) (float64, string) {
+func getSizeAndUnit(size, base float64, _map []string) (float64, string) {
 	index := 0
 
 	unitsLimit := len(_map) - 1
@@ -70,7 +105,7 @@ func getSizeAndUnit(size float64, base float64, _map []string) (float64, string)
 
 // CustomSize returns a human-readable approximation of a size
 // using custom format.
-func CustomSize(format string, size float64, base float64, _map []string) string {
+func CustomSize(format string, size, base float64, _map []string) string {
 	size, unit := getSizeAndUnit(size, base, _map)
 
 	return fmt.Sprintf(format, size, unit)
@@ -146,35 +181,34 @@ func parseSize(sizeStr string, uMap unitMap) (int64, error) {
 	// Process the suffix.
 
 	if len(sfx) > suffixTooLong { // Too long.
-		goto badSuffix
+		return -1, fmt.Errorf("%w: '%s'", ErrInvalidSuffix, sfx)
 	}
 
 	sfx = strings.ToLower(sfx)
 	// Trivial case: b suffix.
 	if sfx[0] == 'b' {
 		if len(sfx) > 1 { // no extra characters allowed after b.
-			goto badSuffix
+			return -1, fmt.Errorf("%w: '%s'", ErrInvalidSuffix, sfx)
 		}
 
 		return int64(size), nil
 	}
+
 	// A suffix from the map.
-	if mul, ok := uMap[sfx[0]]; ok {
-		size *= float64(mul)
-	} else {
-		goto badSuffix
+	mul, ok := uMap[sfx[0]]
+	if !ok {
+		return -1, fmt.Errorf("%w: '%s'", ErrInvalidSuffix, sfx)
 	}
+
+	size *= float64(mul)
 
 	// The suffix may have extra "b" or "ib" (e.g. KiB or MB).
 	switch {
 	case len(sfx) == 2 && sfx[1] != 'b':
-		goto badSuffix
+		return -1, fmt.Errorf("%w: '%s'", ErrInvalidSuffix, sfx)
 	case len(sfx) == 3 && sfx[1:] != "ib":
-		goto badSuffix
+		return -1, fmt.Errorf("%w: '%s'", ErrInvalidSuffix, sfx)
 	}
 
 	return int64(size), nil
-
-badSuffix:
-	return -1, fmt.Errorf("%w: '%s'", ErrInvalidSuffix, sfx)
 }

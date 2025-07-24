@@ -23,8 +23,10 @@ import (
 
 const unknown = "unknown"
 
+// Version is the version of the application, to be overridden at build time.
 var Version = unknown //nolint:gochecknoglobals
 
+// Report contains the version information of the application.
 type Report struct {
 	Version   string `json:"version,omitempty"`
 	Revision  string `json:"revision,omitempty"`
@@ -36,6 +38,7 @@ type Report struct {
 	Raw *debug.BuildInfo `json:"rawReport,omitempty"`
 }
 
+// NewReport creates a new version report with the current build information.
 func NewReport() *Report {
 	rep := &Report{
 		Version:   Version,
@@ -52,12 +55,13 @@ func NewReport() *Report {
 		rep.GoVersion = buildInfo.GoVersion
 		// XXX is this really working as expected? may depend on go version...
 		// unless go install-ed https://github.com/golang/go/issues/51279
-		for _, s := range buildInfo.Settings {
-			if s.Key == "vcs.revision" {
-				rep.Revision = s.Value[:7]
+		for _, setting := range buildInfo.Settings {
+			if setting.Key == "vcs.revision" {
+				//revive:disable:add-constant
+				rep.Revision = setting.Value[:7]
 			}
 
-			if s.Key == "vcs.modified" && s.Value == "true" {
+			if setting.Key == "vcs.modified" && setting.Value == "true" {
 				rep.Dirty = true
 			}
 		}

@@ -16,6 +16,7 @@
 
 package log
 
+// Config represents the configuration for logging.
 type Config struct {
 	Level Level `json:"level,omitempty"`
 }
